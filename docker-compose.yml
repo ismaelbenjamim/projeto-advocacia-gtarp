@@ -1,0 +1,21 @@
+version: "3.3"
+services:
+  database:
+    container_name: projeto_advocacia_db
+    image: postgres:13.2
+    restart: always
+    volumes:
+      - ./.pgdata:/var/lib/postgresql/data
+    environment: # verificar a maneira mais segura de passar informações sensíveis.
+      - LC_ALL=C.UTF-8
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+  web:
+    build: .
+    container_name: projeto_advocacia
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database

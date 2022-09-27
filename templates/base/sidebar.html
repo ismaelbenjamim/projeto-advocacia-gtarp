@@ -1,0 +1,55 @@
+{% load static %}
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
+    <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+        <a class="sidebar-brand brand-logo h1 text-white text-center" style="font-size: 38px; text-decoration: none" href="index.html">S J F</a>
+        <a class="sidebar-brand brand-logo-mini h1 text-white" style="font-size: 20px; text-decoration: none" href="index.html">S J F</a>
+    </div>
+    <ul class="nav">
+        <li class="nav-item nav-category">
+            <span class="nav-link">Navegação</span>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{% url 'dashboard' %}">
+              <span class="menu-icon">
+                <i class="mdi mdi-speedometer"></i>
+              </span>
+                <span class="menu-title">Dashboard</span>
+            </a>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
+               aria-controls="ui-basic">
+              <span class="menu-icon">
+                <i class="mdi mdi-clipboard-text"></i>
+              </span>
+                <span class="menu-title">Processos</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="ui-basic">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% static 'corona/pages/ui-features/buttons.html' %}">Listar</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% static 'corona/pages/ui-features/dropdowns.html' %}">Criar</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{% static 'corona/pages/forms/basic_elements.html' %}">
+              <span class="menu-icon">
+                <i class="mdi mdi-book-multiple"></i>
+              </span>
+                <span class="menu-title">Legislação</span>
+            </a>
+        </li>
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="{% static 'corona/pages/tables/basic-table.html' %}">
+              <span class="menu-icon">
+                <i class="mdi mdi-file-document-box"></i>
+              </span>
+                <span class="menu-title">Serviços</span>
+            </a>
+        </li>
+    </ul>
+</nav>
