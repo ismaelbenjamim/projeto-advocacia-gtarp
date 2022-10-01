@@ -1,0 +1,260 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en-US" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+    <!-- ===============================================-->
+    <!--    Document Title-->
+    <!-- ===============================================-->
+    <title>SJF - Sistema Jurídico do Fluxo</title>
+
+
+    <!-- ===============================================-->
+    <!--    Favicons-->
+    <!-- ===============================================-->
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'assets/icon.png' %}">
+
+
+    <!-- ===============================================-->
+    <!--    Stylesheets-->
+    <!-- ===============================================-->
+    <link rel="stylesheet" crossorigin="anonymous"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css"
+          integrity="sha512-HK5fgLBL+xu6dm/Ii3z4xhlSUyZgTT9tuc/hSrtw6uzJOvgRr2a9jyxxT1ely+B+xFAmJKVSTbpM/CuL7qxO8w==">
+    <link href="{% static 'safia/public/assets/css/theme.css' %}" rel="stylesheet"/>
+
+    <link href="{% static 'safia/public/vendors/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+</head>
+
+
+<body>
+
+<!-- ===============================================-->
+<!--    Main Content-->
+<!-- ===============================================-->
+<main class="main" id="top">
+    <nav class="navbar navbar-light sticky-top" data-navbar-darken-on-scroll="900">
+        <div class="container pt-2">
+            <a class="navbar-brand" href="index.html"><h1 class="text-white">S J F</h1></a>
+            <div class="navbar-nav ms-auto">
+                <div class="d-flex">
+                    <div class="pe-3">
+                        <a href="{% url 'diario-oficial' %}" class="btn btn-secondary">Diário Oficial</a>
+                    </div>
+                    <a href="{% url 'login' %}" class="btn btn-secondary">Login</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- ============================================-->
+    <!-- <section> begin ============================-->
+    <section class="mt-5 mb-6">
+
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-9 col-lg-8 col-xl-6">
+                    <h2 class="display-5 fw-lighter">Bem vindo ao</h2>
+                    <h1 class="display-3 lh-sm">Sistema Jurídico do Fluxo</h1>
+                </div>
+                <div class="col-md-9 col-xl-5">
+                    <p class="fs-2">Sistema de Gestão da área Jurídica da Cidade Fluxo, com intuito de facilitar o
+                        trabalho dos responsáveis pelo fórum.</p>
+                    <a href="https://discord.gg/cidadefluxorp" class="btn btn-primary mt-3">Discord da Cidade</a>
+                </div>
+            </div>
+        </div>
+        <!-- end of .container-->
+
+    </section>
+    <!-- <section> close ============================-->
+    <!-- ============================================-->
+
+
+    <!-- ============================================-->
+    <!-- <section> begin ============================-->
+    <section>
+
+        <div class="container">
+            <h1 class="display-6 fw-semi-bold"> Funcionalidades</h1>
+            <p class="fs-2">Saiba quais são as necessidades que o sistema abrange.</p>
+            <div class="row mb-4 mt-6">
+                <div class="col-md-6">
+                    <div class="border rounded-1 border-700 h-100 features-items">
+                        <div class="p-5"><img src="{% static 'safia/public/assets/img/gallery/dashboardicon.png' %}"
+                                              alt="Dashboard" style="width:48px;height:48px;"/>
+                            <h3 class="pt-3 lh-base">Controle e monitoramento de processos </h3>
+                            <p class="mb-0">Processos a serem realizados na cidade requer uma série de passos para que
+                                seja realizado da melhor forma, nesse caso, ter um controle desses processos é de
+                                extrema importância.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded-1 border-700 h-100 features-items">
+                        <div class="p-5"><img src="{% static 'safia/public/assets/img/gallery/comment.png' %}"
+                                              alt="Comment" style="width:48px;height:48px;"/>
+                            <h3 class="pt-3 lh-base">Transparência</h3>
+                            <p class="mb-0">Possibilitar aos cidadãos da cidade o acesso ao seus processos no alto
+                                através do diário oficial é necessário para manter todos os envolvidos cientes.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="border rounded-1 border-700 h-100 features-items">
+                        <div class="p-5"><img src="{% static 'safia/public/assets/img/gallery/trilored.png' %}"
+                                              alt="Tailored" style="width:48px;height:48px;"/>
+                            <h3 class="pt-3 lh-base">Comunicação</h3>
+                            <p class="mb-0">O SJF proporciona o acesso a informações não somente para o jurídico da
+                                cidade, como também para organizações legais como a Polícia Civil e Militar. Salientando
+                                que essas organizações não tem acesso deliberado a informações sensíveis que se aplica a
+                                Cliente-Advogado.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded-1 border-700 h-100 features-items">
+                        <div class="p-5"><img src="{% static 'safia/public/assets/img/gallery/statistics.png' %}"
+                                              alt="Statistic" style="width:48px;height:48px;"/>
+                            <h3 class="pt-3 lh-base">Análise</h3>
+                            <p class="mb-0">Utilizar o email (discord) ou outras ferramentas para auxiliar no trabalho
+                                na cidade é bem útil, mas o SJF consegue proporcionar uma visão ampla e estatística da
+                                situação jurídica da cidade.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="border rounded-1 border-700 h-100 features-items">
+                        <div class="p-5"><img src="{% static 'safia/public/assets/img/gallery/profile.png' %}"
+                                              alt="Profiles" style="width:48px;height:48px;"/>
+                            <h3 class="pt-3 lh-base">Clientes</h3>
+                            <p class="mb-0">O sistema possibilita ao membros do corpo jurídico um melhor controle de
+                                seus clientes, facilitando na realização das prestações de serviços.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="border rounded-1 border-700 h-100 features-items">
+                        <div class="p-5"><img src="{% static 'safia/public/assets/img/gallery/folder.png' %}"
+                                              alt="Folders" style="width:48px;height:48px;"/>
+                            <h3 class="pt-3 lh-base">Documentação</h3>
+                            <p class="mb-0">Devido a necessidade do jurídico em criar e armazenar uma alta quantidade de
+                                documentação, o sistema disponibiliza esse armazenamento e geração de documentos de
+                                forma mais prática.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end of .container-->
+
+    </section>
+    <!-- <section> close ============================-->
+    <!-- ============================================-->
+
+
+    <!-- ============================================-->
+    <!-- <section> begin ============================-->
+    <section class="mt-5">
+
+        <div class="container">
+            <div class="text-center">
+                <p class="fs-2 ls-2">FAQ</p>
+                <h1 class="display-6 fw-semi-bold">Perguntas frequentes</h1>
+            </div>
+            <div class="row mt-6 flex-center justify-content-xl-evenly px-xl-5">
+                <div class="col-md-7 col-lg-6 order-md-1"><img class="w-100"
+                                                               src="{% static 'safia/public/assets/img/gallery/comment1.png' %}"
+                                                               alt="..."/></div>
+                <div class="col-md-5 col-lg-4">
+                    <h3 class="fs-xl-7 fs-lg-4 fs-md-3 mt-5 mt-md-0">Como me torno advogado?</h3>
+                    <p class="fs-xl-1 ls-3 pe-xl-2"> Entre em contato com Drask Dáfilo#7541, Juíz responsável pelo fórum
+                        da cidade.</p>
+                </div>
+            </div>
+            <div class="row mt-6 flex-center justify-content-xl-evenly px-xl-5">
+                <div class="col-md-7 col-lg-6 false"><img class="w-100"
+                                                          src="{% static 'safia/public/assets/img/gallery/comment2.png' %}"
+                                                          alt="..."/></div>
+                <div class="col-md-5 col-lg-4">
+                    <h3 class="fs-xl-7 fs-lg-4 fs-md-3 mt-5 mt-md-0">Como tenho acesso a plataforma?</h3>
+                    <p class="fs-xl-1 ls-3 pe-xl-2"> Atualmente a autorização a plataforma está limitado, porém em breve
+                        será disponibilizado o registro ao público.</p>
+                </div>
+            </div>
+            <div class="row mt-6 flex-center justify-content-xl-evenly px-xl-5">
+                <div class="col-md-7 col-lg-6 order-md-1"><img class="w-100"
+                                                               src="{% static 'safia/public/assets/img/gallery/comment3.png' %}"
+                                                               alt="..."/></div>
+                <div class="col-md-5 col-lg-4">
+                    <h3 class="fs-xl-7 fs-lg-4 fs-md-3 mt-5 mt-md-0">Como contrato um advogado?</h3>
+                    <p class="fs-xl-1 ls-3 pe-xl-2"> Entre em contato através do chamado para o jurídico pelo
+                        telefone.</p>
+                </div>
+            </div>
+        </div>
+        <!-- end of .container-->
+
+    </section>
+    <!-- <section> close ============================-->
+    <!-- ============================================-->
+
+
+    <!-- ============================================-->
+    <!-- <section> begin ============================-->
+    <section class="bg-secondary mt-8">
+
+        <div class="container">
+            <div class="row">
+
+                <div class="col-xl-4 pt-2 pt-xl-0">
+                    <p class="mb-0 text-center text-xl-end"><a class="text-300 text-decoration-none footer-link"
+                                                               href="#!"> Termos &amp; condições </a><a
+                            class="text-300 text-decoration-none footer-link ps-4" href="#!">Política de privacidade </a>
+                    </p>
+                </div>
+                <div class="col-xl-5 pt-2 pt-xl-0 text-center text-xl-end">
+                    <p class="mb-0">&copy; Sistema Jurídico do Fluxo 2022</p>
+                </div>
+            </div>
+        </div>
+        <!-- end of .container-->
+
+    </section>
+    <!-- <section> close ============================-->
+    <!-- ============================================-->
+
+
+</main>
+<!-- ===============================================-->
+<!--    End of Main Content-->
+<!-- ===============================================-->
+
+
+<!-- ===============================================-->
+<!--    JavaScripts-->
+<!-- ===============================================-->
+<script src="{% static 'safia/public/vendors/@popperjs/popper.min.js' %}"></script>
+<script src="{% static 'safia/public/vendors/bootstrap/bootstrap.min.js' %}"></script>
+<script src="{% static 'safia/public/vendors/is/is.min.js' %}"></script>
+<script src="{% static 'safia/public/vendors/swiper/swiper-bundle.min.js' %}"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@100;200;300;400;500;600;700;800&amp;display=swap"
+      rel="stylesheet">
+<script src="{% static 'safia/public/assets/js/theme.js' %}"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400&amp;display=swap"
+      rel="stylesheet">
+</body>
+
+</html>

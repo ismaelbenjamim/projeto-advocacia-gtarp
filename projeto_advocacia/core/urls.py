@@ -1,10 +1,11 @@
 from django.urls import path
 
 from projeto_advocacia.core.views import CustomLoginView, DiarioOficialView, CustomLogoutView, RegisterView, \
-    NotPermissionView, NotExistsView
+    NotPermissionView, NotExistsView, LadingPageView
 
 urlpatterns = [
-    path('', CustomLoginView.as_view(), name='login'),
+    path('', LadingPageView.as_view(), name='lading-page'),
+    path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', CustomLogoutView.as_view(), name='logout'),
     path('registro/', RegisterView.as_view(), name='register'),
     path('diario-oficial/', DiarioOficialView.as_view(), name='diario-oficial'),
