@@ -2,7 +2,7 @@ import random
 
 from django.db import models
 
-from projeto_advocacia.usuario.models import Usuario, Cliente
+from projeto_advocacia.usuario.models import Usuario, Cliente, Servico
 
 
 def gerar_numero_processo(num=""):
@@ -14,33 +14,35 @@ def gerar_numero_processo(num=""):
 
 class Processo(models.Model):
     TIPOS_FASES = (
-        ('Postulatória', 'Postulatória'),
-        ('Instrutória', 'Instrutória'),
-        ('Decisória', 'Decisória'),
-        ('Recursal', 'Recursal'),
-        ('Executiva', 'Executiva')
+        ('postulatoria', 'Postulatória'),
+        ('instrutoria', 'Instrutória'),
+        ('decisoria', 'Decisória'),
+        ('recursal', 'Recursal'),
+        ('executiva', 'Executiva')
     )
     TIPOS_PROCESSOS = (
-        ('Conhecimento', 'Conhecimento'),
-        ('Cautelar', 'Cautelar'),
-        ('Execução', 'Execução')
+        ('conhecimento', 'Conhecimento'),
+        ('cautelar', 'Cautelar'),
+        ('execução', 'Execução')
     )
-    numero_processo = models.CharField(default=gerar_numero_processo(), max_length=20)
-    autor = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='autor')
-    reu = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='reu')
-    juiz = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True, related_name='juiz')
-    advogado_autor = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True, related_name='advogado_autor')
-    advogado_reu = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True, related_name='advogado_reu')
+    numero_processo = models.CharField(verbose_name="Número do processo", default=gerar_numero_processo(), max_length=20)
+    autor = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='autor', verbose_name="Autor")
+    reu = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='reu', verbose_name="Réu")
+    juiz = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True,
+                             related_name='juiz', verbose_name='Juiz')
+    advogado_autor = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True,
+                                       blank=True, related_name='advogado_autor', verbose_name="Advogado do autor")
+    advogado_reu = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True,
+                                     blank=True, related_name='advogado_reu', verbose_name="Advogado do Réu")
     data_abertura = models.DateField('Data de abertura', null=True, blank=True)
     fase = models.CharField('Fase', max_length=100, choices=TIPOS_FASES)
     tipo = models.CharField('Tipo', max_length=100, choices=TIPOS_PROCESSOS)
     descricao = models.TextField('Descrição do processo', null=True, blank=True)
     postulatoria = models.TextField('Descrição da fase Postulatória', null=True, blank=True)
-    instrutória = models.TextField('Descrição do fase Instrutória', null=True, blank=True)
-    decisória = models.TextField('Descrição do fase Decisória', null=True, blank=True)
+    instrutoria = models.TextField('Descrição do fase Instrutória', null=True, blank=True)
+    decisoria = models.TextField('Descrição do fase Decisória', null=True, blank=True)
     recursal = models.TextField('Descrição do fase Recursal', null=True, blank=True)
     executiva = models.TextField('Descrição do fase Executiva', null=True, blank=True)
-
 
     def __str__(self):
         return f'{self.numero_processo}'
@@ -57,9 +59,20 @@ class Lei(models.Model):
         ('7', 'Abuso de Autoridade'),
         ('8', 'Lavagem de dinheiro'),
     )
-    tipo = models.CharField('Tipo', max_length=200, choices=TIPOS_LEIS)
+    categoria = models.CharField('Categoria', max_length=200, choices=TIPOS_LEIS)
     artigo = models.CharField('Artigo', max_length=10)
     descricao = models.TextField('Descrição')
     pena_base = models.CharField('Pena base', max_length=255)
-    pena_fianca = models.CharField('Fiança', max_length=255)
-    pena_agravante = models.TextField('Agravante')
+    pena_fianca = models.CharField('Fiança', max_length=255, null=True, blank=True)
+    pena_agravante = models.TextField('Agravante', null=True, blank=True)
+
+    def __str__(self):
+        return f'{self.get_categoria_display()} - {self.artigo}'
+
+
+class PrestacaoServico(models.Model):
+    responsavel = models.ForeignKey(Usuario, on_delete=models.SET_NULL, null=True, verbose_name='Resposável')
+    servico = models.ForeignKey(Servico, on_delete=models.CASCADE, verbose_name='Serviço')
+    descricao = models.TextField(verbose_name='Descrição do serviço prestado', null=True, blank=True)
+    valor = models.DecimalField(verbose_name="Valor", max_digits=15, decimal_places=2)
+    cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True)

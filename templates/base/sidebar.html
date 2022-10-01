@@ -1,14 +1,14 @@
 {% load static %}
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
     <div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
-        <a class="sidebar-brand brand-logo h1 text-white text-center" style="font-size: 38px; text-decoration: none" href="index.html">S J F</a>
-        <a class="sidebar-brand brand-logo-mini h1 text-white" style="font-size: 20px; text-decoration: none" href="index.html">S J F</a>
+        <a class="sidebar-brand brand-logo h1 text-white text-center" style="font-size: 38px; text-decoration: none" href="{% url 'dashboard' %}">S J F</a>
+        <a class="sidebar-brand brand-logo-mini h1 text-white" style="font-size: 20px; text-decoration: none" href="{% url 'dashboard' %}">S J F</a>
     </div>
     <ul class="nav">
         <li class="nav-item nav-category">
             <span class="nav-link">Navegação</span>
         </li>
-        <li class="nav-item menu-items">
+        <li class="nav-item menu-items {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
             <a class="nav-link" href="{% url 'dashboard' %}">
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
@@ -16,7 +16,29 @@
                 <span class="menu-title">Dashboard</span>
             </a>
         </li>
-        <li class="nav-item menu-items">
+        {% with 'prestacao_servicos_list prestacao_servicos_create prestacao_servicos_update prestacao_servicos_delete prestacao_servicos_detail' as names %}
+        <li class="nav-item menu-items {% if request.resolver_match.url_name in names.split %}active{% endif %}">
+            <a class="nav-link" data-bs-toggle="collapse" href="#prestacao_servicos" aria-expanded="false"
+               aria-controls="ui-basic">
+              <span class="menu-icon">
+                <i class="mdi mdi-scale-balance"></i>
+              </span>
+                <span class="menu-title">Serviços</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse {% if request.resolver_match.url_name in names.split %}show{% endif %}" id="prestacao_servicos">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'prestacao_servicos_list' %}">Listar</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'prestacao_servicos_create' %}">Criar</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        {% endwith %}
+        {% with 'processos_list processos_create processos_update processos_delete processos_detail' as names %}
+        <li class="nav-item menu-items {% if request.resolver_match.url_name in names.split %}active{% endif %}">
             <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
                aria-controls="ui-basic">
               <span class="menu-icon">
@@ -25,30 +47,128 @@
                 <span class="menu-title">Processos</span>
                 <i class="menu-arrow"></i>
             </a>
-            <div class="collapse" id="ui-basic">
+            <div class="collapse {% if request.resolver_match.url_name in names.split %}show{% endif %}" id="ui-basic">
                 <ul class="nav flex-column sub-menu">
                     <li class="nav-item"><a class="nav-link"
-                                            href="{% static 'corona/pages/ui-features/buttons.html' %}">Listar</a></li>
+                                            href="{% url 'processos_list' %}">Listar</a></li>
                     <li class="nav-item"><a class="nav-link"
-                                            href="{% static 'corona/pages/ui-features/dropdowns.html' %}">Criar</a>
+                                            href="{% url 'processos_create' %}">Criar</a>
                     </li>
                 </ul>
             </div>
         </li>
-        <li class="nav-item menu-items">
-            <a class="nav-link" href="{% static 'corona/pages/forms/basic_elements.html' %}">
+        {% endwith %}
+        {% with 'leis_list leis_create leis_update leis_delete leis_detail' as names %}
+        <li class="nav-item menu-items {% if request.resolver_match.url_name in names.split %}active{% endif %}">
+            <a class="nav-link" data-bs-toggle="collapse" href="#legislacao" aria-expanded="false"
+               aria-controls="ui-basic">
               <span class="menu-icon">
                 <i class="mdi mdi-book-multiple"></i>
               </span>
                 <span class="menu-title">Legislação</span>
+                <i class="menu-arrow"></i>
             </a>
+            <div class="collapse {% if request.resolver_match.url_name in names.split %}show{% endif %}" id="legislacao">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'leis_list' %}">Listar</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'leis_create' %}">Criar</a>
+                    </li>
+                </ul>
+            </div>
         </li>
-        <li class="nav-item menu-items">
-            <a class="nav-link" href="{% static 'corona/pages/tables/basic-table.html' %}">
+        {% endwith %}
+        {% with 'usuarios_list usuarios_create usuarios_update usuarios_delete usuarios_detail' as names %}
+        <li class="nav-item menu-items {% if request.resolver_match.url_name in names.split %}active{% endif %}">
+            <a class="nav-link" data-bs-toggle="collapse" href="#usuarios" aria-expanded="false"
+               aria-controls="ui-basic">
+              <span class="menu-icon">
+                <i class="mdi mdi mdi-account"></i>
+              </span>
+                <span class="menu-title">Usuarios</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse {% if request.resolver_match.url_name in names.split %}show{% endif %}" id="usuarios">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'usuarios_list' %}">Listar</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'usuarios_create' %}">Criar</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        {% endwith %}
+        {% with 'clientes_list clientes_create clientes_update clientes_delete clientes_detail' as names %}
+        <li class="nav-item menu-items {% if request.resolver_match.url_name in names.split %}active{% endif %}">
+            <a class="nav-link" data-bs-toggle="collapse" href="#clientes" aria-expanded="false"
+               aria-controls="ui-basic">
+              <span class="menu-icon">
+                <i class="mdi mdi mdi-account"></i>
+              </span>
+                <span class="menu-title">Clientes</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse {% if request.resolver_match.url_name in names.split %}show{% endif %}" id="clientes">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'clientes_list' %}">Listar</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'clientes_create' %}">Criar</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        {% endwith %}
+        {% with 'documentos_list documentos_create documentos_update documentos_delete documentos_detail' as names %}
+        <li class="nav-item menu-items {% if request.resolver_match.url_name in names.split %}active{% endif %}">
+            <a class="nav-link" data-bs-toggle="collapse" href="#documentos" aria-expanded="false"
+               aria-controls="ui-basic">
+              <span class="menu-icon">
+                <i class="mdi mdi-file-document-box-multiple"></i>
+              </span>
+                <span class="menu-title">Documentos</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse {% if request.resolver_match.url_name in names.split %}show{% endif %}" id="documentos">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'documentos_list' %}">Listar</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'documentos_create' %}">Criar</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        {% endwith %}
+        {% with 'servicos_list servicos_create servicos_update servicos_delete servicos_detail' as names %}
+        <li class="nav-item menu-items {% if request.resolver_match.url_name in names.split %}active{% endif %}">
+            <a class="nav-link" data-bs-toggle="collapse" href="#servicos" aria-expanded="false"
+               aria-controls="ui-basic">
               <span class="menu-icon">
                 <i class="mdi mdi-file-document-box"></i>
               </span>
-                <span class="menu-title">Serviços</span>
+                <span class="menu-title">Serviços Disponíveis</span>
+                <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse {% if request.resolver_match.url_name in names.split %}show{% endif %}" id="servicos">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'servicos_list' %}">Listar</a></li>
+                    <li class="nav-item"><a class="nav-link"
+                                            href="{% url 'servicos_create' %}">Criar</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+        {% endwith %}
+        <li class="nav-item menu-items">
+            <a class="nav-link" href="#">
+              <span class="menu-icon">
+                <i class="mdi mdi-file-document-box"></i>
+              </span>
+                <span class="menu-title">Outros</span>
             </a>
         </li>
     </ul>

@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 from decouple import config, Csv
 from dj_database_url import parse as dburl
@@ -36,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
 
     # Third-party apps
     'rest_framework',
@@ -48,6 +50,7 @@ INSTALLED_APPS = [
     'projeto_advocacia.usuario',
     'projeto_advocacia.dashboard',
     'projeto_advocacia.processo',
+    'projeto_advocacia.documento',
 ]
 
 MIDDLEWARE = [
@@ -65,7 +68,7 @@ ROOT_URLCONF = 'projeto_advocacia.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [f'{BASE_DIR}/templates'],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

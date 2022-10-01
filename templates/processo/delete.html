@@ -1,0 +1,51 @@
+{% extends 'base/main.html' %}
+{% load static %}
+{% block name %}{{ config.raiz }}{% endblock %}
+{% block content %}
+    <div class="page-header">
+        <h3 class="page-title">{{ config.raiz }}</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" style="text-decoration: none">{{ config.raiz }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ config.titulo }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">{{ config.titulo }}</h4>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-12 mt-4">
+                            <h3 class="font-weight-light text-danger mb-4">Deseja realmente apagar o <span
+                                    class="text-white font-weight-bold">{{ config.descricao }} {{ object }}</span>?</h3>
+                            <hr>
+                            <p class="text-warning h5 mb-3">Informações do {{ config.descricao }}:</p>
+                            {% load getattribute %}
+                            {% for campo in config.campos_tabela %}
+                                <span>{{ campo.verbose_name }}: <span class="text-warning">{{ object|getattribute:campo.name }}</span></span><br>
+                            {% endfor %}
+                        </div>
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-block btn-lg btn-danger">Apagar {{ config.descricao }} do banco de dados</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        function limpar_filtros() {
+            let inputs = document.getElementsByClassName("form-control");
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].name && inputs[i].value) {
+                    inputs[i].value = "";
+                }
+            }
+        }
+    </script>
+{% endblock %}
