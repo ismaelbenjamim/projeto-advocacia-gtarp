@@ -29,8 +29,8 @@ class DashboardView(TemplateView):
         p_encerrado_mes_atual = p_aberto_mes_atual.filter(fase="Executiva")
         p_encerrado_mes_passd = p_aberto_mes_passd.filter(fase="Executiva")
 
-        adv_mes_atual = Usuario.objects.filter(date_joined__month=mes_atual)
-        adv_mes_passd = Usuario.objects.filter(date_joined__month=mes_passado)
+        adv_mes_atual = Usuario.objects.filter(date_joined__month=mes_atual, organizacao='2')
+        adv_mes_passd = Usuario.objects.filter(date_joined__month=mes_passado, organizacao='2')
 
         context['info'] = {
             "processos_abertos": [

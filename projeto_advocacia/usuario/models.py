@@ -38,6 +38,14 @@ class Usuario(AbstractUser):
         ('2', 'Fórum'),
         ('3', 'Prefeitura'),
     )
+    username = models.IntegerField(
+        "Usuário",
+        unique=True,
+        help_text=('Requerido, são apenas números.'),
+        error_messages={
+            'unique': "Só pode existir um único usuário com essa identidade.",
+        },
+    )
     cargo = models.CharField('Cargo', max_length=20, choices=TIPOS_CARGOS, default='0')
     first_name = models.CharField('Nome', max_length=250, blank=True)
     last_name = models.CharField('Sobrenome', max_length=250, blank=True)
