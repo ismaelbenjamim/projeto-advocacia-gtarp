@@ -56,7 +56,6 @@ class Usuario(AbstractUser):
     is_juridico = models.BooleanField('É do Fórum', default=False)
     foto_perfil = models.ImageField('Foto de perfil', null=True, blank=True)
 
-
     def __str__(self):
         if self.first_name and self.last_name:
             response = f'{self.first_name} {self.last_name} #{self.identidade}'
@@ -73,6 +72,11 @@ class Usuario(AbstractUser):
         else:
             response = f'{self.username}'
         return response
+
+    def save(self, *args, **kwargs):
+        if not self.identidade:
+            self.identidade = self.username
+        super(Usuario, self).save(*args, **kwargs)
 
 
 class Servico(models.Model):
