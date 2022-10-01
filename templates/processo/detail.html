@@ -1,0 +1,53 @@
+{% extends 'base/main.html' %}
+{% load static %}
+{% block name %}{{ config.raiz }}{% endblock %}
+{% block content %}
+    <div class="page-header">
+        <h3 class="page-title">{{ config.raiz }}</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" style="text-decoration: none">{{ config.raiz }}</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ config.titulo }}</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">{{ config.titulo }}</h4>
+                <div class="row">
+                    {% load getattribute %}
+                    {% for campo in config.campos_tabela %}
+                        <div class="{% if campo.name in config.campos_filtro %}col-12{% else %}col-6{% endif %}">
+                            <div class="form-group">
+                                <label for="exampleInputUsername1">{{ campo.verbose_name }}</label>
+                                {% if campo.name in config.campos_filtro %}
+                                    <textarea type="text" class="form-control"
+                                          style="background-color: #15181e; height: 300px" disabled>{{ object|getattribute:campo.name }}</textarea>
+                                {% else %}
+                                <input type="text" class="form-control" id="{{ campo|lower }}" value="{{ object|getattribute:campo.name }}"
+                                       style="background-color: #15181e" disabled>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="col-12 mt-4">
+                        <a href="{% url 'processos_list' %}" class="btn btn-block btn-secondary">Voltar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        function limpar_filtros() {
+            let inputs = document.getElementsByClassName("form-control");
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].name && inputs[i].value) {
+                    inputs[i].value = "";
+                }
+            }
+        }
+    </script>
+{% endblock %}

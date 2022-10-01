@@ -5,7 +5,7 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Corona Admin</title>
+    <title>SJF - Sistema Jurídico do Fluxo</title>
     <!-- plugins:css -->
     <link rel="stylesheet" href="{% static 'corona/assets/vendors/mdi/css/materialdesignicons.min.css' %}">
     <link rel="stylesheet" href="{% static 'corona/assets/vendors/css/vendor.bundle.base.css' %}">
@@ -28,14 +28,15 @@
                     <div class="card-body px-5 py-5">
                         <h3 class="text-center mb-5"><span
                                 class="fw-light">Bem vindo ao Sistema de Gestão Júridico da</span> Cidade Fluxo</h3>
-                        <form>
+                        <form method="post">
+                            {% csrf_token %}
                             <div class="form-group">
                                 <label>Identidade</label>
-                                <input type="text" class="form-control">
+                                <input type="text" id="id_username" name="username" class="form-control">
                             </div>
                             <div class="form-group">
                                 <label>Senha</label>
-                                <input type="text" class="form-control p_input">
+                                <input type="text" id="id_password" name="password" class="form-control">
                             </div>
                             <div class="form-group d-flex align-items-center justify-content-between">
                                 <div class="form-check">
@@ -43,6 +44,9 @@
                                         <input type="checkbox" class="form-check-input"> Lembrar-me </label>
                                 </div>
                                 <a href="#" class="forgot-pass" style="text-decoration: none">Esqueci a senha</a>
+                            </div>
+                            <div class="row">
+                                <span class="text-body">{{ form.errors }}</span>
                             </div>
                             <div class="row">
                                 <div class="col-12">
