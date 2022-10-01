@@ -25,7 +25,7 @@ class Processo(models.Model):
         ('cautelar', 'Cautelar'),
         ('execução', 'Execução')
     )
-    numero_processo = models.CharField(verbose_name="Número do processo", default=gerar_numero_processo(), max_length=20)
+    numero_processo = models.CharField(verbose_name="Número do processo", default=gerar_numero_processo, max_length=20)
     autor = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='autor', verbose_name="Autor")
     reu = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='reu', verbose_name="Réu")
     juiz = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True,
