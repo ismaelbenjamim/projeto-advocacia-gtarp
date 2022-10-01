@@ -3,6 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, FormView, ListView, DetailView, CreateView, UpdateView, DeleteView
 
@@ -32,9 +33,19 @@ class NotExistsView(TemplateView):
     template_name = "error/404.html"
 
 
+class LadingPageView(TemplateView):
+    template_name = 'home/index.html'
+
+
 class CustomLoginView(LoginView):
     template_name = 'home/login.html'
     form_class = CustomAuthenticationForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse_lazy('dashboard'))
+        else:
+            return super(CustomLoginView, self).dispatch(request, *args, **kwargs)
 
 
 class CustomLogoutView(LogoutView):
