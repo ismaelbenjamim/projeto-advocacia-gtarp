@@ -18,33 +18,20 @@
                 <form id="form" class="forms-sample">
                     {% csrf_token %}
                     <div class="row">
-                        <div class="col-4">
-                            <div class="form-group">
-                                <label for="exampleInputUsername1">Número do processo</label>
-                                <input type="text" class="form-control" name="numero_processo"
-                                       id="exampleInputUsername1"
-                                       placeholder="Número do processo">
+                        {% for filter in filters %}
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label for="{{ filter.id_for_label }}">{{ filter.label }}</label>
+                                    {{ filter }}
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="form-group">
-                                <label for="exampleInputEmail1">Autor</label>
-                                <input type="text" name="autor" class="form-control" id="exampleInputEmail1"
-                                       placeholder="Identidade do Autor">
-                            </div>
-                        </div>
-                        <div class="col-4">
-                            <div class="form-group">
-                                <label for="exampleInputPassword1">Data</label>
-                                <input type="date" name="data_abertura" class="form-control" id="exampleInputPassword1"
-                                       placeholder="Data">
-                            </div>
-                        </div>
+                        {% endfor %}
+
                     </div>
                     <div class="row mt-3">
                         <div class="col-10">
-                            <button onclick="limpar_filtros()" class="btn btn-secondary btn-block">Limpar filtros
-                            </button>
+                            <a href="?" class="btn btn-secondary btn-block">Limpar filtros
+                            </a>
                         </div>
                         <div class="col-2 d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary">Filtrar</button>
@@ -62,7 +49,7 @@
                     <table class="table">
                         <thead>
                         <tr>
-                            {% for campo in config.campos_tabela %}
+                            {% for campo in fields %}
                                 <th>{{ campo.verbose_name }}</th>
                             {% endfor %}
                             <th></th>
@@ -78,9 +65,12 @@
                                 <td>{{ object.cargo_responsavel }}</td>
                                 <td>{{ object.is_ativo }}</td>
                                 <td>
-                                    <a href="{% url 'leis_detail' object.pk %}" class="text-primary" style="text-decoration: none;"><i class="mdi mdi-eye"></i></a>
-                                    <a href="{% url 'leis_update' object.pk %}" class="text-success" style="text-decoration: none;"><i class="mdi mdi-border-color"></i></a>
-                                    <a href="{% url 'leis_delete' object.pk %}" class="text-danger" style="text-decoration: none;"><i class="mdi mdi-close-circle"></i></a>
+                                    <a href="{% url config.url_detail object.pk %}" class="text-primary"
+                                       style="text-decoration: none;"><i class="mdi mdi-eye"></i></a>
+                                    <a href="{% url config.url_update object.pk %}" class="text-success"
+                                       style="text-decoration: none;"><i class="mdi mdi-border-color"></i></a>
+                                    <a href="{% url config.url_delete object.pk %}" class="text-danger"
+                                       style="text-decoration: none;"><i class="mdi mdi-close-circle"></i></a>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -100,35 +90,6 @@
                     inputs[i].value = "";
                 }
             }
-        }
-
-        function get_data() {
-            let inputs = document.getElementsByClassName("form-control");
-            console.log(inputs);
-            console.log(inputs[0]);
-            let query_params = "";
-            for (let i = 0; i < inputs.length; i++) {
-                if (inputs[i].name && inputs[i].value) {
-                    query_params = query_params + inputs[i].name + "=" + inputs[i].value + "&";
-                }
-            }
-            console.log(query_params);
-            $.get("?queryset=true&" + query_params, function (data) {
-                const object = JSON.parse(data);
-                var response = "";
-                for (let i = 0; i < object.length; i++) {
-                    response = response + `
-                <tr>
-                    <td>${object[i]["numero_processo"]}</td>
-                    <td>${object[i]["autor"]}</td>
-                    <td>${object[i]["reu"]}</td>
-                    <td>${object[i]["juiz"]}</td>
-                    <td>${object[i]["advogado_autor"]}</td>
-                </tr>
-                `
-                }
-                $("#conteudo").html(response);
-            });
         }
     </script>
 {% endblock %}

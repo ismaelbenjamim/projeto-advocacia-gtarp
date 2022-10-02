@@ -3,11 +3,12 @@ import datetime
 from django.shortcuts import render
 from django.views.generic import TemplateView
 
+from projeto_advocacia.core.views import CustomIsAuthenticated
 from projeto_advocacia.processo.models import Processo
 from projeto_advocacia.usuario.models import Usuario
 
 
-class DashboardView(TemplateView):
+class DashboardView(CustomIsAuthenticated, TemplateView):
     template_name = 'dashboard.html'
 
     def get_porcentagem(self, val1, val2):

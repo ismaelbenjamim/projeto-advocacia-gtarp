@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from projeto_advocacia.processo.views import ProcessoList, LeiDetail, LeiDelete, LeiUpdate, LeiCreate, LeiList
+from projeto_advocacia.processo.views import LeiDetail, LeiDelete, LeiUpdate, LeiCreate, LeiList
 
 urlpatterns = [
     path('listar/', LeiList.as_view(), name='leis_list'),

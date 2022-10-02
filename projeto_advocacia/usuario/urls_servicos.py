@@ -1,7 +1,9 @@
 from django.urls import path, include
 
-from projeto_advocacia.usuario.views import ServicoList, ServicoCreate, ServicoUpdate, ServicoDelete, ServicoDetail, \
-    PrestacaoServicoList, PrestacaoServicoCreate, PrestacaoServicoUpdate, PrestacaoServicoDelete, PrestacaoServicoDetail
+from projeto_advocacia.usuario.views.servico import ServicoList, ServicoCreate, ServicoUpdate, ServicoDelete, \
+    ServicoDetail
+from projeto_advocacia.usuario.views.servico_prestado import PrestacaoServicoList, PrestacaoServicoCreate, \
+    PrestacaoServicoUpdate, PrestacaoServicoDelete, PrestacaoServicoDetail
 
 urlpatterns = [
     path('listar/', ServicoList.as_view(), name='servicos_list'),
