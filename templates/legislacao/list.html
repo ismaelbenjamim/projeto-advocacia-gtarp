@@ -79,9 +79,9 @@
                                 <td>R$ {{ object.pena_fianca|intcomma }}</td>
                                 <td>{{ object.pena_agravante }}</td>
                                 <td>
-                                    <a href="{% url 'servicos_detail' object.pk %}" class="text-primary" style="text-decoration: none;"><i class="mdi mdi-eye"></i></a>
-                                    <a href="{% url 'servicos_update' object.pk %}" class="text-success" style="text-decoration: none;"><i class="mdi mdi-border-color"></i></a>
-                                    <a href="{% url 'servicos_delete' object.pk %}" class="text-danger" style="text-decoration: none;"><i class="mdi mdi-close-circle"></i></a>
+                                    <a href="{% url 'leis_detail' object.pk %}" class="text-primary" style="text-decoration: none;"><i class="mdi mdi-eye"></i></a>
+                                    <a href="{% url 'leis_update' object.pk %}" class="text-success" style="text-decoration: none;"><i class="mdi mdi-border-color"></i></a>
+                                    <a href="{% url 'leis_delete' object.pk %}" class="text-danger" style="text-decoration: none;"><i class="mdi mdi-close-circle"></i></a>
                                 </td>
                             </tr>
                         {% endfor %}

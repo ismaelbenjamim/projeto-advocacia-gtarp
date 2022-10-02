@@ -28,15 +28,29 @@ class UsuarioForm(forms.ModelForm):
             visible.field.widget.attrs['class'] = 'form-control mb-2'
 
 
+class UsuarioPerfilForm(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        fields = ['first_name', 'last_name', 'celular', 'idade', 'organizacao', 'foto_perfil']
+
+    def __init__(self, *args, **kwargs):
+        super(UsuarioPerfilForm, self).__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control mb-2'
+
+
 class ServicoForm(forms.ModelForm):
     class Meta:
         model = Servico
-        fields = '__all__'
+        fields = ['id', 'descricao', 'valor_base', 'cargo_responsavel', 'is_ativo']
 
     def __init__(self, *args, **kwargs):
         super(ServicoForm, self).__init__(*args, **kwargs)
         for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'form-control mb-2'
+            if visible.field.__class__.__name__ == "BooleanField":
+                visible.field.widget.attrs['class'] = 'form-check-input mb-2'
+            else:
+                visible.field.widget.attrs['class'] = 'form-control mb-2'
 
 
 class PrestacaoServicoForm(forms.ModelForm):

@@ -16,6 +16,23 @@
             <div class="card-body">
                 <h4 class="card-title">{{ config.titulo }}</h4>
                 <div class="row">
+                    {% load getnamefield %}
+                    {% for field, value in fields.items %}
+                    <div class="{% if field|getnamefield == "TextField" %}col-12{% else %}col-6{% endif %}">
+                            <div class="form-group">
+                                <label for="exampleInputUsername1">{{ field.verbose_name }}</label>
+                                {% if field|getnamefield == 'TextField' %}
+                                    <textarea type="text" class="form-control"
+                                          style="background-color: #15181e; height: 300px" disabled>{{ value }}</textarea>
+                                {% else %}
+                                    <input type="text" class="form-control" id="{{ field|lower }}" value="{{ value }}"
+                                       style="background-color: #15181e" disabled>
+                                {% endif %}
+
+                            </div>
+                        </div>
+                    {% endfor %}
+
                     {% load getattribute %}
                     {% for campo in config.campos_tabela %}
                         <div class="{% if campo.name in config.campos_filtro %}col-12{% else %}col-6{% endif %}">
@@ -32,7 +49,7 @@
                         </div>
                     {% endfor %}
                     <div class="col-12 mt-4">
-                        <a href="{% url 'leis_list' %}" class="btn btn-block btn-secondary">Voltar</a>
+                        <a href="{% url config.url_list %}" class="btn btn-block btn-secondary">Voltar</a>
                     </div>
                 </div>
             </div>

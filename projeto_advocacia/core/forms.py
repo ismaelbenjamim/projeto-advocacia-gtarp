@@ -1,21 +1,30 @@
 from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import AuthenticationForm
-from django.core.exceptions import ValidationError
-from django.utils.text import capfirst
+from django.core.validators import RegexValidator
+from django.utils.regex_helper import _lazy_re_compile
 
 from projeto_advocacia.usuario.models import Usuario
 
 
+integer_validator = RegexValidator(
+    _lazy_re_compile(r'^-?\d+\Z'),
+    message='A identidade é representada por valores numéricos, ex: 1234',
+    code='invalid',
+)
+def validate_integer(value):
+    return integer_validator(value)
+
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
         label="Identidade",
-        widget=forms.TextInput(attrs={'autofocus': True})
+        widget=forms.TextInput(attrs={'autofocus': True, 'class': 'form-control'}),
+        validators=[validate_integer]
     )
     password = forms.CharField(
         label="Senha",
         strip=False,
-        widget=forms.PasswordInput(attrs={'autocomplete': 'current-password'}),
+        widget=forms.PasswordInput(attrs={'autocomplete': 'current-password', 'class': 'form-control'}),
     )
 
     error_messages = {
