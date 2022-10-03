@@ -16,23 +16,30 @@
             <div class="card-body">
                 <h4 class="card-title">{{ config.titulo }}</h4>
                 <div class="row">
-                    {% load getattribute %}
-                    {% for campo in config.campos_tabela %}
-                        <div class="{% if campo.name in config.campos_filtro %}col-12{% else %}col-6{% endif %}">
+                    {% load getnamefield %}
+                    {% for field in fields %}
+                        <div class="{% if field.field|getnamefield == "JSONField" %}col-12{% else %}col-6{% endif %}">
                             <div class="form-group">
-                                <label for="exampleInputUsername1">{{ campo.verbose_name }}</label>
-                                {% if campo.name in config.campos_filtro %}
+                                <label for="{{ field.id_label }}">{{ field.label }}</label>
+                                {% if field.field|getnamefield == 'JSONField' %}
                                     <textarea type="text" class="form-control"
-                                          style="background-color: #15181e; height: 300px" disabled>{{ campo }}</textarea>
+                                              style="background-color: #15181e; height: 300px"
+                                              disabled>{{ field.value }}</textarea>
+                                {% elif field.field|getnamefield == 'FileField' %}
+                                    <div class="form-control" id="{{ field.id_label }}"
+                                         style="background-color: #15181e"><a href="{{ field.value.url }}">{{ field.value }}</a></div>
                                 {% else %}
-                                <input type="text" class="form-control" id="{{ campo|lower }}" value="{{ object|getattribute:campo.name }}"
-                                       style="background-color: #15181e" disabled>
+                                <input type="text" class="form-control" id="{{ field.id_label }}"
+                                           value="{{ field.value }}"
+                                           style="background-color: #15181e" disabled>
                                 {% endif %}
+
                             </div>
                         </div>
                     {% endfor %}
+
                     <div class="col-12 mt-4">
-                        <a href="{% url 'documentos_list' %}" class="btn btn-block btn-secondary">Voltar</a>
+                        <a href="{% url config.url_list %}" class="btn btn-block btn-secondary">Voltar</a>
                     </div>
                 </div>
             </div>

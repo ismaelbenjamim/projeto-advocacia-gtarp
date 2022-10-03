@@ -10,8 +10,8 @@ class Cliente(models.Model):
     idade = models.IntegerField('Idade', null=True, blank=True)
     status = models.CharField('Status', max_length=100, null=True, blank=True)
     organizacao = models.CharField('Organização', max_length=100, null=True, blank=True)
-    porte = models.BooleanField('Porte', null=True, blank=True)
-    cnh = models.BooleanField('CNH', null=True, blank=True)
+    porte = models.BooleanField('Porte')
+    cnh = models.BooleanField('CNH')
 
     def __str__(self):
         return f'{self.nome} {self.sobrenome} #{self.identidade}'
@@ -52,7 +52,7 @@ class Usuario(AbstractUser):
     identidade = models.IntegerField('Identidade', unique=True, null=True, blank=True)
     celular = models.CharField('Celular', max_length=10, null=True, blank=True)
     idade = models.IntegerField('Idade', null=True, blank=True)
-    organizacao = models.CharField('Organização', max_length=100, choices=TIPOS_ORGS, null=True, blank=True)
+    organizacao = models.CharField('Organização', max_length=100, choices=TIPOS_ORGS)
     is_juridico = models.BooleanField('É do Fórum', default=False)
     foto_perfil = models.ImageField('Foto de perfil', null=True, blank=True)
 
@@ -76,6 +76,8 @@ class Usuario(AbstractUser):
     def save(self, *args, **kwargs):
         if not self.identidade:
             self.identidade = self.username
+        if self.organizacao == '2':
+            self.is_juridico = True
         super(Usuario, self).save(*args, **kwargs)
 
 

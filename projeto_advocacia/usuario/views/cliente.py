@@ -1,11 +1,30 @@
-from django.urls import reverse_lazy
+from django import forms
+from projeto_advocacia.core.forms import CustomModelForm
 from projeto_advocacia.core.views import CustomListView, CustomDetailView, CustomCreateView, CustomUpdateView, \
     CustomDeleteView
-from projeto_advocacia.usuario.forms import ClienteForm
 from projeto_advocacia.usuario.models import Cliente
 
 
+class ClienteForm(forms.ModelForm):
+    class Meta:
+        model = Cliente
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            if visible.field.__class__.__name__ == "BooleanField":
+                visible.field.widget.attrs['class'] = 'form-check-input mb-2'
+            else:
+                visible.field.widget.attrs['class'] = 'form-control mb-2'
+
+
 class ClienteList(CustomListView):
+    class FiltersForm(CustomModelForm):
+        class Meta:
+            model = Cliente
+            fields = ['nome', 'sobrenome', 'identidade', 'celular', 'idade', 'status', 'organizacao', 'porte', 'cnh']
+
     model = Cliente
     queryset = Cliente.objects.all()
     paginate_by = 10
@@ -13,80 +32,69 @@ class ClienteList(CustomListView):
     template_name = 'cliente/list.html'
     raiz = "Clientes"
     titulo = "Lista de Clientes"
-    fields = ['identidade', 'nome', 'sobrenome', 'celular', 'idade', 'status', 'organizacao', 'porte', 'cnh']
-
-    def campos_tabela(self):
-        fields = []
-        all_fields = self.model._meta.get_fields()
-        if self.fields == '__all__':
-            return all_fields
-        for field in all_fields:
-            if field.name in self.fields:
-                fields.append(field)
-        return fields
-
-    def get_queryset(self):
-        queryset = super(ClienteList, self).get_queryset()
-        if self.request.GET:
-            filters = {}
-            for index, valor in self.request.GET.items():
-                if not valor:
-                    continue
-                if index == "csrfmiddlewaretoken":
-                    continue
-                filters[index] = valor
-            try:
-                queryset = queryset.filter(**filters)
-            except:
-                return []
-        return queryset
+    url_prefix = "clientes"
+    fields = ['id', 'nome', 'sobrenome', 'identidade', 'celular', 'idade', 'status', 'organizacao', 'porte', 'cnh']
+    filters_form = FiltersForm
 
 
 class ClienteDetail(CustomDetailView):
+    class DetailForm(ClienteForm):
+        class Meta:
+            model = Cliente
+            fields = '__all__'
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            for visible in self.visible_fields():
+                visible.field.widget.attrs['disabled'] = True
+
     model = Cliente
     template_name = 'cliente/detail.html'
     raiz = "Clientes"
     titulo = "Detalhe do Cliente"
-    campos_tabela = model._meta.get_fields()
-    url_raiz = 'clientes'
+    url_prefix = "clientes"
+    form_class = DetailForm
 
 
 class ClienteCreate(CustomCreateView):
+    class CreateForm(ClienteForm):
+        class Meta:
+            model = Cliente
+            fields = '__all__'
+
     model = Cliente
     template_name = 'cliente/create.html'
-    form_class = ClienteForm
-    success_url = reverse_lazy("clientes_list")
+    form_class = CreateForm
     raiz = "Clientes"
     titulo = "Adicionar novo Cliente"
+    url_prefix = "clientes"
 
 
 class ClienteUpdate(CustomUpdateView):
+    class UpdateForm(ClienteForm):
+        class Meta:
+            model = Cliente
+            fields = '__all__'
+
     model = Cliente
     template_name = 'cliente/update.html'
-    form_class = ClienteForm
+    form_class = UpdateForm
     raiz = "Clientes"
     titulo = "Editar Cliente"
-    campos_filtro = ['autor', 'reu', 'juiz', 'advogado_autor', 'advogado_reu']
-
-    def get_success_url(self):
-        success_url = reverse_lazy(f"clientes_detail", kwargs={"pk": self.object.pk})
-        return success_url
-
-    def get_form(self, form_class=None):
-        if form_class is None:
-            form_class = self.get_form_class()
-        response = form_class(**self.get_form_kwargs())
-        for field in response:
-            if field.name in self.campos_filtro:
-                field.initial = getattr(self.object, field.name)
-        return response
+    url_prefix = "clientes"
 
 
 class ClienteDelete(CustomDeleteView):
+    class DeleteForm(ClienteForm):
+        class Meta:
+            model = Cliente
+            fields = '__all__'
+
     model = Cliente
     template_name = 'cliente/delete.html'
-    success_url = reverse_lazy("clientes_list")
     raiz = "Clientes"
     titulo = "Deletar Cliente"
-    descricao = "Clientes"
-    campos_tabela = model._meta.get_fields()
+    descricao = "Cliente"
+    url_prefix = "clientes"
+    form_class = DeleteForm
+

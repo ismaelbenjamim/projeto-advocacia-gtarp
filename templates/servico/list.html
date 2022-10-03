@@ -60,10 +60,15 @@
                         {% for object in object_list %}
                             <tr>
                                 <td>{{ object.id }}</td>
-                                <td>{{ object.descricao }}</td>
-                                <td>{{ object.valor_base }}</td>
-                                <td>{{ object.cargo_responsavel }}</td>
-                                <td>{{ object.is_ativo }}</td>
+                                <td>{{ object.nome }}</td>
+                                <td>{{ object.sobrenome }}</td>
+                                <td>{{ object.identidade }}</td>
+                                <td>{{ object.celular }}</td>
+                                <td>{{ object.idade }}</td>
+                                <td>{{ object.status }}</td>
+                                <td>{{ object.organizacao }}</td>
+                                <td>{{ object.porte }}</td>
+                                <td>{{ object.cnh }}</td>
                                 <td>
                                     <a href="{% url config.url_detail object.pk %}" class="text-primary"
                                        style="text-decoration: none;"><i class="mdi mdi-eye"></i></a>

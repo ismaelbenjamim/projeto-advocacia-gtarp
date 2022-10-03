@@ -47,3 +47,15 @@ class CustomAuthenticationForm(AuthenticationForm):
             else:
                 self.confirm_login_allowed(self.user_cache)
         return self.cleaned_data
+
+
+class CustomModelForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.required = False
+            if visible.field.__class__.__name__ == "BooleanField":
+                visible.field.widget.attrs['class'] = 'form-check-input mb-2'
+            else:
+                visible.field.widget.attrs['class'] = 'form-control mb-2'
