@@ -16,7 +16,10 @@ class UsuarioForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for visible in self.visible_fields():
-            visible.field.widget.attrs['class'] = 'form-control mb-2'
+            if visible.field.__class__.__name__ == "BooleanField":
+                visible.field.widget.attrs['class'] = 'form-check-input mb-2'
+            else:
+                visible.field.widget.attrs['class'] = 'form-control mb-2'
 
 
 class UsuarioCreateForm(UsuarioForm):
@@ -33,12 +36,6 @@ class UsuarioUpdateForm(UsuarioForm):
     class Meta:
         model = Usuario
         fields = ['first_name', 'last_name', 'cargo', 'celular', 'idade', 'organizacao', 'foto_perfil']
-
-
-class UsuarioPerfilForm(UsuarioForm):
-    class Meta:
-        model = Usuario
-        fields = ['first_name', 'last_name', 'celular', 'idade', 'organizacao', 'foto_perfil']
 
 
 class UsuarioFilters(CustomModelForm):
@@ -98,12 +95,21 @@ class UsuarioDelete(CustomDeleteView):
 
 
 class UsuarioPerfil(CustomUpdateView):
+    class UsuarioPerfilForm(UsuarioForm):
+        class Meta:
+            model = Usuario
+            fields = ['foto_perfil', 'first_name', 'last_name', 'celular', 'idade']
+
     model = Usuario
-    template_name = 'usuario/update.html'
-    form_class = UsuarioPerfilForm
+    template_name = 'usuario/perfil.html'
     raiz = "Usuarios"
     titulo = "Editar Usuario"
-    campos_filtro = ['first_name', 'last_name', 'celular', 'idade', 'organizacao', 'foto_perfil']
+    url_prefix = "usuarios"
+    form_class = UsuarioPerfilForm
+
+    def setup(self, request, *args, **kwargs):
+        super(UsuarioPerfil, self).setup(request, *args, **kwargs)
+        self.kwargs = {'pk': str(self.request.user.pk)}
 
     def get_success_url(self):
-        return reverse_lazy("usuarios_list", {"pk": self.object.pk})
+        return reverse_lazy("usuarios_perfil")
