@@ -1,6 +1,6 @@
 from django.urls import path, include
 
-from projeto_advocacia.processo.views import ProcessoList, ProcessoDetail, ProcessoCreate, ProcessoUpdate, \
+from projeto_advocacia.processo.views.processo import ProcessoList, ProcessoDetail, ProcessoCreate, ProcessoUpdate, \
     ProcessoDelete
 
 urlpatterns = [

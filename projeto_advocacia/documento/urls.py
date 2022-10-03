@@ -1,6 +1,7 @@
 from django.urls import path, include
 
-from projeto_advocacia.documento.views import DocumentoDetail, DocumentoDelete, DocumentoUpdate, DocumentoCreate, DocumentoList
+from projeto_advocacia.documento.views.documento import DocumentoList, DocumentoCreate, DocumentoUpdate, \
+    DocumentoDelete, DocumentoDetail
 
 urlpatterns = [
     path('listar/', DocumentoList.as_view(), name='documentos_list'),

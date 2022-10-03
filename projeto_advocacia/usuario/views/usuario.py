@@ -1,8 +1,50 @@
+from django import forms
+from django.contrib.auth.hashers import make_password
 from django.urls import reverse_lazy
+
+from projeto_advocacia.core.forms import CustomModelForm
 from projeto_advocacia.core.views import CustomListView, CustomDetailView, CustomCreateView, CustomUpdateView, \
     CustomDeleteView
-from projeto_advocacia.usuario.forms import UsuarioForm, UsuarioPerfilForm
-from projeto_advocacia.usuario.models import Usuario
+from projeto_advocacia.usuario.models import Usuario, Cliente
+
+
+class UsuarioForm(forms.ModelForm):
+    class Meta:
+        model = Usuario
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for visible in self.visible_fields():
+            visible.field.widget.attrs['class'] = 'form-control mb-2'
+
+
+class UsuarioCreateForm(UsuarioForm):
+    class Meta:
+        model = Usuario
+        fields = ['id', 'username', 'password', 'first_name', 'last_name', 'cargo', 'celular', 'idade', 'organizacao']
+
+    def clean(self):
+        response = super(UsuarioCreateForm, self).clean()
+        response['password'] = make_password(response['password'])
+        return response
+
+class UsuarioUpdateForm(UsuarioForm):
+    class Meta:
+        model = Usuario
+        fields = ['first_name', 'last_name', 'cargo', 'celular', 'idade', 'organizacao', 'foto_perfil']
+
+
+class UsuarioPerfilForm(UsuarioForm):
+    class Meta:
+        model = Usuario
+        fields = ['first_name', 'last_name', 'celular', 'idade', 'organizacao', 'foto_perfil']
+
+
+class UsuarioFilters(CustomModelForm):
+    class Meta:
+        model = Usuario
+        fields = ['identidade', 'first_name', 'last_name', 'celular', 'idade', 'organizacao']
 
 
 class UsuarioList(CustomListView):
@@ -11,74 +53,48 @@ class UsuarioList(CustomListView):
     paginate_by = 10
     ordering = ['pk']
     template_name = 'usuario/list.html'
-    raiz = "Usuarios"
-    titulo = "Lista de Usuarios"
-    campos_tabela = ['Identidade', 'Cargo', 'Nome', 'Sobrenome', 'Celular', 'Idade']
-
-    def get_queryset(self):
-        queryset = super(UsuarioList, self).get_queryset()
-        if self.request.GET:
-            filters = {}
-            for index, valor in self.request.GET.items():
-                if not valor:
-                    continue
-                if index == "csrfmiddlewaretoken":
-                    continue
-                if index in ['autor', 'reu', 'juiz', 'advogado_autor', 'advogado_reu']:
-                    index = f'{index}__identidade'
-                filters[index] = valor
-            try:
-                queryset = queryset.filter(**filters)
-            except:
-                return []
-        return queryset
+    raiz = "Usuários"
+    titulo = "Lista de Usuários"
+    url_prefix = "usuarios"
+    fields = ['id', 'first_name', 'last_name', 'identidade', 'celular', 'idade', 'organizacao']
+    filters_form = UsuarioFilters
 
 
 class UsuarioDetail(CustomDetailView):
     model = Usuario
     template_name = 'usuario/detail.html'
-    raiz = "Usuarios"
-    titulo = "Detalhe do Usuario"
-    fields = ['id', 'identidade', 'username', 'email', 'first_name', 'last_name', 'idade', 'cargo',
-                     'last_login', 'date_joined']
-    #campos_filtro = ['descricao', 'postulatoria', 'instrutoria', 'decisoria', 'recursal', 'executiva']
-
-    def campos_tabela(self):
-        fields = []
-        for field in self.object._meta.get_fields():
-            if field.name in self.fields:
-                fields.append(field)
-        return fields
+    raiz = "Usuários"
+    titulo = "Detalhe do Usuário"
+    url_prefix = "usuarios"
+    form_class = UsuarioUpdateForm
 
 
 class UsuarioCreate(CustomCreateView):
     model = Usuario
     template_name = 'usuario/create.html'
-    form_class = UsuarioForm
-    success_url = reverse_lazy("usuarios_list")
-    raiz = "Usuarios"
-    titulo = "Adicionar novo usuario"
+    form_class = UsuarioCreateForm
+    raiz = "Usuários"
+    titulo = "Adicionar novo Usuário"
+    url_prefix = "usuarios"
 
 
 class UsuarioUpdate(CustomUpdateView):
     model = Usuario
     template_name = 'usuario/update.html'
-    form_class = UsuarioForm
-    raiz = "Usuarios"
-    titulo = "Editar Usuario"
-    campos_filtro = ['first_name', 'last_name', 'celular', 'idade', 'organizacao', 'foto_perfil']
+    form_class = UsuarioUpdateForm
+    raiz = "Usuários"
+    titulo = "Editar Usuário"
+    url_prefix = "usuarios"
 
-    def get_form(self, form_class=None):
-        if form_class is None:
-            form_class = self.get_form_class()
-        response = form_class(**self.get_form_kwargs())
-        for field in response:
-            if field.name in self.campos_filtro:
-                field.initial = getattr(self.object, field.name)
-        return response
 
-    def get_success_url(self):
-        return reverse_lazy("usuarios_list", {"pk": self.object.pk})
+class UsuarioDelete(CustomDeleteView):
+    model = Usuario
+    template_name = 'usuario/delete.html'
+    raiz = "Usuários"
+    titulo = "Deletar Usuário"
+    descricao = "Usuário"
+    url_prefix = "usuarios"
+    form_class = UsuarioUpdateForm
 
 
 class UsuarioPerfil(CustomUpdateView):
@@ -89,26 +105,5 @@ class UsuarioPerfil(CustomUpdateView):
     titulo = "Editar Usuario"
     campos_filtro = ['first_name', 'last_name', 'celular', 'idade', 'organizacao', 'foto_perfil']
 
-    def get_form(self, form_class=None):
-        if form_class is None:
-            form_class = self.get_form_class()
-        response = form_class(**self.get_form_kwargs())
-        for field in response:
-            if field.name in self.campos_filtro:
-                field.initial = getattr(self.object, field.name)
-        return response
-
     def get_success_url(self):
         return reverse_lazy("usuarios_list", {"pk": self.object.pk})
-
-
-class UsuarioDelete(CustomDeleteView):
-    model = Usuario
-    queryset = Usuario.objects.all()
-    template_name = 'usuario/delete.html'
-    form_class = UsuarioForm
-    success_url = reverse_lazy("usuarios_list")
-    raiz = "Usuarios"
-    titulo = "Deletar Usuario"
-    descricao = "Usuario"
-    campos_tabela = ['data_abertura', 'autor', 'reu', 'juiz', 'advogado_autor', 'advogado_reu', 'fase']

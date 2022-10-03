@@ -1,4 +1,5 @@
 from attr import fields
+from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.views import LoginView, LogoutView
 from django.core.exceptions import ImproperlyConfigured
@@ -66,38 +67,51 @@ class ConfigView:
     raiz = None
     titulo = None
     descricao = None
-    campos_filtro = None
-    fields = None
-    object = None
+    url_prefix = None
 
     def get_config_page(self):
         response = {
             "raiz": self.raiz,
             "titulo": self.titulo,
             "descricao": self.descricao,
-            "campos_tabela": self.campos_tabela,
-            "campos_filtro": self.campos_filtro,
+            "url_list": f'{self.url_prefix}_list',
+            "url_detail": f'{self.url_prefix}_detail',
+            "url_update": f'{self.url_prefix}_update',
+            "url_delete": f'{self.url_prefix}_delete',
+            "url_create": f'{self.url_prefix}_create',
         }
         return response
 
 
-    def campos_tabela(self):
-        fields = []
-        for field in self.object._meta.get_fields():
-            if self.fields == '__all__':
-                if hasattr(self.object, field.name):
-                    fields.append(field)
-            if field.name in self.fields:
-                print(field.name)
-                fields.append(field)
-        return fields
-
-
 class CustomListView(ListView, ConfigView):
+    filters_form = None
+    fields = None
+
     def get_context_data(self, **kwargs):
         context = super(CustomListView, self).get_context_data(**kwargs)
         context['config'] = self.get_config_page()
+        context['fields'] = self.get_fields_list()
+        context['filters'] = self.get_filters()
         return context
+
+    def get_filters(self):
+        form = self.filters_form(self.request.GET)
+        return form
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.GET:
+            filters = {}
+            for index, valor in self.request.GET.items():
+                if valor == 'on':
+                    valor = True
+                if valor and index in list(self.filters_form().fields):
+                    filters[index] = valor
+            try:
+                queryset = queryset.filter(**filters)
+            except:
+                return []
+        return queryset
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -105,11 +119,22 @@ class CustomListView(ListView, ConfigView):
         else:
             return super(CustomListView, self).dispatch(request, *args, **kwargs)
 
+    def get_fields_list(self):
+        all_fields = list(self.model._meta.get_fields())
+        field_list = []
+        for field in all_fields:
+            if field.name in self.fields:
+                field_list.append(field)
+        return field_list
+
 
 class CustomDetailView(DetailView, ConfigView):
+    form_class = None
+
     def get_context_data(self, **kwargs):
         context = super(CustomDetailView, self).get_context_data(**kwargs)
         context['config'] = self.get_config_page()
+        context['fields'] = self.get_object_fields()
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -117,6 +142,10 @@ class CustomDetailView(DetailView, ConfigView):
             return HttpResponseRedirect("/error/403/")
         else:
             return super(CustomDetailView, self).dispatch(request, *args, **kwargs)
+
+    def get_object_fields(self):
+        response = self.form_class(instance=self.object)
+        return response
 
 
 class CustomCreateView(CreateView, ConfigView):
@@ -131,12 +160,21 @@ class CustomCreateView(CreateView, ConfigView):
         else:
             return super(CustomCreateView, self).dispatch(request, *args, **kwargs)
 
+    def get_success_url(self):
+        self.success_url = reverse_lazy(self.get_config_page().get('url_list'))
+        return super().get_success_url()
+
 
 class CustomUpdateView(UpdateView, ConfigView):
+
     def get_context_data(self, **kwargs):
         context = super(CustomUpdateView, self).get_context_data(**kwargs)
         context['config'] = self.get_config_page()
         return context
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy(self.get_config_page().get('url_detail'), kwargs={"pk": self.object.pk})
+        return super().get_success_url()
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -146,10 +184,12 @@ class CustomUpdateView(UpdateView, ConfigView):
 
 
 class CustomDeleteView(DeleteView, ConfigView):
+    form_class = None
 
     def get_context_data(self, **kwargs):
         context = super(CustomDeleteView, self).get_context_data(**kwargs)
         context['config'] = self.get_config_page()
+        context['fields'] = self.get_object_fields()
         return context
 
     def dispatch(self, request, *args, **kwargs):
@@ -158,3 +198,10 @@ class CustomDeleteView(DeleteView, ConfigView):
         else:
             return super(CustomDeleteView, self).dispatch(request, *args, **kwargs)
 
+    def get_object_fields(self):
+        response = self.form_class(instance=self.object)
+        return response
+
+    def get_success_url(self):
+        self.success_url = reverse_lazy(self.get_config_page().get('url_list'))
+        return super().get_success_url()

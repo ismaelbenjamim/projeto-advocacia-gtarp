@@ -17,37 +17,24 @@
                 <h4 class="card-title">{{ config.titulo }}</h4>
                 <div class="row">
                     {% load getnamefield %}
-                    {% for field, value in fields.items %}
-                    <div class="{% if field|getnamefield == "TextField" %}col-12{% else %}col-6{% endif %}">
+                    {% for field in fields %}
+                        <div class="{% if field.field|getnamefield == "TextField" %}col-12{% else %}col-6{% endif %}">
                             <div class="form-group">
-                                <label for="exampleInputUsername1">{{ field.verbose_name }}</label>
-                                {% if field|getnamefield == 'TextField' %}
+                                <label for="{{ field.id_label }}">{{ field.label }}</label>
+                                {% if field.field|getnamefield == 'TextField' %}
                                     <textarea type="text" class="form-control"
-                                          style="background-color: #15181e; height: 300px" disabled>{{ value }}</textarea>
+                                              style="background-color: #15181e; height: 300px"
+                                              disabled>{{ field.value }}</textarea>
                                 {% else %}
-                                    <input type="text" class="form-control" id="{{ field|lower }}" value="{{ value }}"
-                                       style="background-color: #15181e" disabled>
+                                    <input type="text" class="form-control" id="{{ field.id_label }}"
+                                           value="{{ field.value }}"
+                                           style="background-color: #15181e" disabled>
                                 {% endif %}
 
                             </div>
                         </div>
                     {% endfor %}
 
-                    {% load getattribute %}
-                    {% for campo in config.campos_tabela %}
-                        <div class="{% if campo.name in config.campos_filtro %}col-12{% else %}col-6{% endif %}">
-                            <div class="form-group">
-                                <label for="exampleInputUsername1">{{ campo.verbose_name }}</label>
-                                {% if campo.name in config.campos_filtro %}
-                                    <textarea type="text" class="form-control"
-                                          style="background-color: #15181e; height: 300px" disabled>{{ campo }}</textarea>
-                                {% else %}
-                                <input type="text" class="form-control" id="{{ campo|lower }}" value="{{ object|getattribute:campo.name }}"
-                                       style="background-color: #15181e" disabled>
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% endfor %}
                     <div class="col-12 mt-4">
                         <a href="{% url config.url_list %}" class="btn btn-block btn-secondary">Voltar</a>
                     </div>

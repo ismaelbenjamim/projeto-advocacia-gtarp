@@ -23,9 +23,8 @@
                                     class="text-white font-weight-bold">{{ config.descricao }} {{ object }}</span>?</h3>
                             <hr>
                             <p class="text-warning h5 mb-3">Informações do {{ config.descricao }}:</p>
-                            {% load getattribute %}
-                            {% for campo in config.campos_tabela %}
-                                <span>{{ campo.verbose_name }}: <span class="text-warning">{{ object|getattribute:campo.name }}</span></span><br>
+                            {% for field in fields %}
+                                <span>{{ field.label }}: <span class="text-warning">{{ field.value }}</span></span><br>
                             {% endfor %}
                         </div>
                         <div class="col-12 mt-4">

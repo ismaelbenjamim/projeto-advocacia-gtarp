@@ -19,7 +19,6 @@
                     {% csrf_token %}
                     <div class="row">
                     {{ form.as_p }}
-
                     {% for field in form %}
                         {% if field.field.queryset %}
                         <datalist id="{{ field.field.widget.attrs.list }}">
@@ -33,7 +32,7 @@
                     </div>
                     <div class="row mt-3">
                         <div class="col-10">
-                            <a href="{% url 'processos_list' %}" class="btn btn-secondary btn-block">Cancelar</a>
+                            <a href="{% url config.url_list %}" class="btn btn-secondary btn-block">Cancelar</a>
                         </div>
                         <div class="col-2 d-flex justify-content-end">
                             <button type="submit" class="btn btn-primary">Enviar</button>
