@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
 from django.urls import reverse_lazy
 
@@ -113,3 +114,40 @@ class UsuarioPerfil(CustomUpdateView):
 
     def get_success_url(self):
         return reverse_lazy("usuarios_perfil")
+
+
+class UsuarioChangePassword(CustomUpdateView):
+    class UsuarioPasswordForm(UsuarioForm):
+        password_now = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control mb-2'}), required=True)
+        password_new = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control mb-2'}), required=True)
+        class Meta:
+            model = Usuario
+            fields = ['password']
+
+        def clean(self):
+            response = super().clean()
+            check_password = authenticate(username=self.instance.username, password=response['password_now'])
+            if check_password is not None:
+                if not response['password'] == response['password_new']:
+                    self.add_error("password_new", "A confirmação de senha não coincide com a nova senha")
+                else:
+                    response['password'] = make_password(response['password'])
+            else:
+                self.add_error("password_now", "A senha atual está incorreta")
+
+    model = Usuario
+    template_name = 'usuario/change_password.html'
+    raiz = "Usuarios"
+    titulo = "Alterar Senha"
+    url_prefix = "usuarios"
+    form_class = UsuarioPasswordForm
+
+    def setup(self, request, *args, **kwargs):
+        super(UsuarioChangePassword, self).setup(request, *args, **kwargs)
+        self.kwargs = {'pk': str(self.request.user.pk)}
+
+    def form_valid(self, form):
+        return super(UsuarioChangePassword, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy("login")

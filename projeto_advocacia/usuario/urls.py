@@ -3,15 +3,17 @@ from django.urls import path, include
 from projeto_advocacia.usuario.views.cliente import ClienteList, ClienteCreate, ClienteUpdate, ClienteDelete, \
     ClienteDetail
 from projeto_advocacia.usuario.views.usuario import UsuarioList, UsuarioCreate, UsuarioUpdate, UsuarioPerfil, \
-    UsuarioDelete, UsuarioDetail
+    UsuarioDelete, UsuarioDetail, UsuarioChangePassword
 
 urlpatterns = [
     path('listar/', UsuarioList.as_view(), name='usuarios_list'),
     path('adicionar/', UsuarioCreate.as_view(), name='usuarios_create'),
     path('editar/<str:pk>/', UsuarioUpdate.as_view(), name='usuarios_update'),
-    path('perfil/', UsuarioPerfil.as_view(), name='usuarios_perfil'),
     path('deletar/<str:pk>/', UsuarioDelete.as_view(), name='usuarios_delete'),
     path('visualizar/<str:pk>/', UsuarioDetail.as_view(), name='usuarios_detail'),
+
+    path('perfil/', UsuarioPerfil.as_view(), name='usuarios_perfil'),
+    path('perfil/alterar-senha/', UsuarioChangePassword.as_view(), name='usuarios_change_password'),
 
     path('clientes/listar/', ClienteList.as_view(), name='clientes_list'),
     path('clientes/adicionar/', ClienteCreate.as_view(), name='clientes_create'),
