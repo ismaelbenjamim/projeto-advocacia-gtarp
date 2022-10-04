@@ -30,10 +30,38 @@
                                            value="{{ field.value }}"
                                            style="background-color: #15181e" disabled>
                                 {% endif %}
-
                             </div>
                         </div>
                     {% endfor %}
+
+                    <div class="table-responsive mb-4 mt-2">
+                    <hr class="mb-4">
+                        <h4 class="card-title text-warning">Legislação</h4>
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Pena Base</th>
+                                <th>Fiança</th>
+                                <th>Agravante</th>
+                                <th>Artigo</th>
+                                <th>Descrição</th>
+                                <th>Categoria</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for object in lista_leis %}
+                                <tr>
+                                    <td>{{ object.leis.pena_base_meses }} meses / R$ {{ object.leis.pena_base_multa }}</td>
+                                    <td>{{ object.leis.pena_fianca }}</td>
+                                    <td>{{ object.leis.pena_agravante }}</td>
+                                    <td>{{ object.leis.artigo }}</td>
+                                    <td>{{ object.leis.descricao }}</td>
+                                    <td>{{ object.leis.get_categoria_display }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
 
                     <div class="col-12 mt-4">
                         <a href="{% url config.url_list %}" class="btn btn-block btn-secondary">Voltar</a>

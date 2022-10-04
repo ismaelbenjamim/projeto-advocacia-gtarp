@@ -144,7 +144,7 @@ class CustomDetailView(DetailView, ConfigView):
             return super(CustomDetailView, self).dispatch(request, *args, **kwargs)
 
     def get_object_fields(self):
-        response = self.form_class(instance=self.object)
+        response = self.form_class(instance=self.get_object())
         return response
 
 

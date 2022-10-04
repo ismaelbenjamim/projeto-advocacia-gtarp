@@ -33,7 +33,7 @@ class LeiList(CustomListView):
     raiz = "Leis"
     titulo = "Lista de Leis"
     url_prefix = "leis"
-    fields = ['categoria', 'artigo', 'descricao', 'pena_base', 'pena_fianca', 'pena_agravante']
+    fields = ['categoria', 'artigo', 'descricao', 'pena_base_meses', 'pena_fianca', 'pena_agravante']
     filters_form = FiltersForm
 
 

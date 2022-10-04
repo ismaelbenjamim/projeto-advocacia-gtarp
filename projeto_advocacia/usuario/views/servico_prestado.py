@@ -7,7 +7,7 @@ from django.views.generic import TemplateView
 from projeto_advocacia.core.forms import CustomModelForm
 from projeto_advocacia.core.views import CustomListView, CustomDetailView, CustomCreateView, CustomUpdateView, \
     CustomDeleteView
-from projeto_advocacia.processo.models import PrestacaoServico
+from projeto_advocacia.processo.models import PrestacaoServico, Lei, ServicoLeis
 from projeto_advocacia.usuario.models import Cliente
 
 
@@ -62,7 +62,6 @@ class PrestacaoServicoDetail(CustomDetailView):
             for visible in self.visible_fields():
                 visible.field.widget.attrs['disabled'] = True
 
-
     model = PrestacaoServico
     template_name = 'prestacao_servico/detail.html'
     raiz = "Prestação de Serviços"
@@ -70,73 +69,10 @@ class PrestacaoServicoDetail(CustomDetailView):
     url_prefix = "prestacao_servicos"
     form_class = DetailForm
 
-
-# class PrestacaoServicoCreate(CustomCreateView):
-#     class ClienteForm(PrestacaoServicoForm):
-#         class Meta:
-#             model = Cliente
-#             fields = '__all__'
-#
-#     class CreateForm(PrestacaoServicoForm):
-#         fields_data_list = ['cliente', 'responsavel', 'processo']
-#         class Meta:
-#             model = PrestacaoServico
-#             fields = '__all__'
-#
-#         def __init__(self, *args, **kwargs):
-#             super().__init__(*args, **kwargs)
-#             self.base_fields['cliente'].required = False
-#             for visible in self.visible_fields():
-#                 if visible.name == 'cliente':
-#                     visible.required = False
-#                 if visible.name in self.fields_data_list:
-#                     #visible.field.to_field_name = 'identidade'
-#                     visible.field.widget = forms.TextInput(attrs=visible.field.widget.attrs)
-#                     visible.field.widget.attrs['list'] = f"list_{visible.name}"
-#
-#
-#     model = PrestacaoServico
-#     template_name = 'prestacao_servico/create.html'
-#     form_class = CreateForm
-#     raiz = "Prestação de Serviços"
-#     titulo = "Adicionar nova Prestação de Serviços"
-#     url_prefix = "prestacao_servicos"
-#
-#     def get_context_data(self, **kwargs):
-#         response = super(PrestacaoServicoCreate, self).get_context_data(**kwargs)
-#         response['form_cliente'] = self.ClienteForm()
-#         return response
-#
-#     def post(self, request, *args, **kwargs):
-#         self.form_class().add_error("cliente", "Erro")
-#         data = self.request.POST.dict()
-#         if not data.get("cnh"):
-#             data["cnh"] = False
-#         if not data.get("porte"):
-#             data["porte"] = False
-#         for campo, valor in data.items():
-#             if valor == '' or valor is None:
-#                 data[campo] = None
-#         buscar_cliente = Cliente.objects.filter(identidade=data.get('identidade'))
-#         if buscar_cliente:
-#             return super(PrestacaoServicoCreate, self).get(request, *args, **kwargs)
-#         cliente = Cliente.objects.create(
-#             nome=data.get('nome'),
-#             sobrenome=data.get('sobrenome'),
-#             identidade=data.get('identidade'),
-#             celular=data.get('celular'),
-#             idade=data.get('idade'),
-#             status=data.get('status'),
-#             organizacao=data.get('organizacao'),
-#             cnh=data.get('cnh'),
-#             porte=data.get('porte')
-#         )
-#         self.request.POST._mutable = True
-#         self.request.POST['cliente'] = cliente.pk
-#         return super(PrestacaoServicoCreate, self).post(request, *args, **kwargs)
-#
-#     def get_form(self, form_class=None):
-#         super(PrestacaoServicoCreate, self).get_form()
+    def get_context_data(self, **kwargs):
+        context = super(PrestacaoServicoDetail, self).get_context_data(**kwargs)
+        context['lista_leis'] = ServicoLeis.objects.filter(servico=self.object)
+        return context
 
 
 class PrestacaoServicoCreate(TemplateView):
@@ -175,6 +111,7 @@ class PrestacaoServicoCreate(TemplateView):
         context['buscar_cliente'] = self.BuscarClienteForm()
         context['cliente_form'] = self.ClienteForm()
         context['servico_form'] = self.ServicoForm()
+        context['object_list'] = Lei.objects.all()
         return context
         
     def get(self, request, *args, **kwargs):
@@ -201,6 +138,8 @@ class PrestacaoServicoCreate(TemplateView):
             data["cnh"] = False
         if not data.get('porte'):
             data["porte"] = False
+        if data.get('lista_leis'):
+            data['lista_leis'] = [int(valor) for valor in str(data['lista_leis']).split(',')]
         print(data)
         if not data.get("cliente"):
             form_cliente = self.get_form_servico(request.POST)
@@ -219,19 +158,26 @@ class PrestacaoServicoCreate(TemplateView):
                     cnh=data.get('cnh'),
                     porte=data.get('porte')
                 )
-                data['cliente'] = cliente.identidade
             else:
                 return self.form_invalid(form_cliente)
-
+        print(data)
         form_servico = self.get_form_servico(data)
         if form_servico.is_valid():
             servico = form_servico.save()
-            print(servico)
+            if not servico.cliente:
+                servico.cliente = cliente
+                servico.save()
             self.object_pk = servico.pk
+            for lei_id in data['lista_leis']:
+                servico_lei = ServicoLeis.objects.create(
+                    servico=servico,
+                    leis_id=lei_id
+                )
+                print(servico_lei)
+
             return self.form_valid(form_servico)
         else:
             return self.form_invalid(form_servico)
-        return super(PrestacaoServicoCreate, self).get(request, *args, **kwargs)
 
 class PrestacaoServicoUpdate(CustomUpdateView):
     class UpdateForm(PrestacaoServicoForm):
