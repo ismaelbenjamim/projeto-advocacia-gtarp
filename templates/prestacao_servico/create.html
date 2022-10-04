@@ -18,17 +18,59 @@
                 <form id="form" method="post" enctype="multipart/form-data" class="forms-sample">
                     {% csrf_token %}
                     <div class="row">
-                    {{ form.as_p }}
-                    {% for field in form %}
-                        {% if field.field.queryset %}
-                        <datalist id="{{ field.field.widget.attrs.list }}">
-                            {% for data in field.field.queryset %}
-                                <option value="{{ data.identidade }}">{{ data.get_nome_identidade }}</option>
-                            {% endfor %}
-                        </datalist>
-                        {% endif %}
-                    {% endfor %}
+                        <div class="col-12">
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input type="radio" class="form-check-input" name="optionsRadios"
+                                               id="opt_cliente_existente" value="False" checked> Cliente existente <i
+                                            class="input-helper"></i></label>
+                                </div>
+                                <div class="form-check">
+                                    <label class="form-check-label">
+                                        <input type="radio" class="form-check-input" name="optionsRadios"
+                                               id="opt_novo_cliente" value="True"> Novo cliente <i
+                                            class="input-helper"></i></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="cliente_novo" style="display: none">
+                        <div class="col-12 mb-4">
+                            <div class="card card-inverse-dark">
+                                <div class="card-body">
+                                    <h4 class="card-title">Novo cliente</h4>
+                                    {{ form_cliente }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" id="cliente_existente">
+                        <div class="col-12 mb-2">
+                            <label>{{ form.cliente.label }}:</label>
+                            {{ form.cliente }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        {% for field in form %}
+                            {% if not field.name == "cliente" %}
+                                <div class="col-12 mb-2">
+                                    <label>{{ field.label }}:</label>
+                                    {{ field }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
 
+                        {% for field in form %}
+                            {% if field.field.queryset %}
+                                <datalist id="{{ field.field.widget.attrs.list }}">
+                                    {% for data in field.field.queryset %}
+                                        <option value="{{ data.pk }}">{{ data }}</option>
+                                    {% endfor %}
+                                </datalist>
+                            {% endif %}
+                        {% endfor %}
+                        {{ form.errors }}
                     </div>
                     <div class="row mt-3">
                         <div class="col-10">
@@ -45,16 +87,16 @@
 {% endblock %}
 {% block script %}
     <script src=
-"https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js">
+                    "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js">
     </script>
 
     <script src=
-"https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js">
+                    "https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js">
     </script>
 
     <link href=
-"http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"
-        rel="stylesheet" type="text/css" />
+                  "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"
+          rel="stylesheet" type="text/css"/>
     <script>
         function limpar_filtros() {
             let inputs = document.getElementsByClassName("form-control");
@@ -65,15 +107,14 @@
             }
         }
 
-        $(function () {
-            var availableTags = [
-                {% for data in form.autor.field.queryset %}
-                    "{{data.get_nome_completo}}",
-                {% endfor %}
-            ];
-            $("#asdas").autocomplete({
-                source: availableTags
-            });
+        $('input[type=radio]').change(function () {
+            if (this.value == "True") {
+                $('#cliente_existente').hide().find('input, textarea').prop('disabled', true);
+                $('#cliente_novo').show().find('input, textarea').prop('disabled', false);
+            } else {
+                $('#cliente_novo').hide().find('input, textarea').prop('disabled', true);
+                $('#cliente_existente').show().find('input, textarea').prop('disabled', false);
+            }
         });
 
     </script>

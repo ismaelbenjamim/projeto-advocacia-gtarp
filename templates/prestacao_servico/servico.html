@@ -1,0 +1,225 @@
+{% extends 'base/main.html' %}
+{% load static %}
+{% block name %}Nova Prestação de Serviço{% endblock %}
+{% block content %}
+    <div class="page-header">
+        <h3 class="page-title">Serviços</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" style="text-decoration: none">Serviços</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Nova Prestação de Serviço</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4>Nova Prestação de Serviço</h4>
+                <form id="form" method="post" enctype="multipart/form-data" class="forms-sample">
+                    {% csrf_token %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="form-group">
+                                {{ buscar_cliente }}
+                                {% for field in buscar_cliente %}
+                                    {% if field.field.queryset %}
+                                        <datalist id="{{ field.field.widget.attrs.list }}">
+                                            {% for data in field.field.queryset %}
+                                                <option value="{{ data.identidade }}">{{ data }}</option>
+                                            {% endfor %}
+                                        </datalist>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <div class="col-12 mt-3">
+                                    <p class="text-warning">Não encontrou registro?</p>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" id="checkbox_cliente" class="form-check-input">
+                                            Adicionar novo cliente <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="mb-4">
+                    <h4 class="card-title text-success">Informações Gerais</h4>
+
+                    <div class="row" id="cliente_novo">
+                        <div class="col-12 mb-4">
+                            <div class="card card-inverse-dark">
+                                <div class="card-body">
+                                    <h4 class="card-title">Novo cliente</h4>
+                                    {{ cliente_form.as_p }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{ servico_form.as_p }}
+                    {% for field in servico_form %}
+                        {% if field.field.queryset %}
+                            <datalist id="{{ field.field.widget.attrs.list }}">
+                                {% for data in field.field.queryset %}
+                                    <option value="{% if field.name == "responsavel" %}{{ data.identidade }}{% else %}{{ data.numero_processo }}{% endif %}">{{ data }}</option>
+                                {% endfor %}
+                            </datalist>
+                        {% endif %}
+                    {% endfor %}
+
+                    {{ form.errors }}
+
+                    <hr class="mt-5 mb-4">
+                    <h4 class="card-title text-danger">Legislação</h4>
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="id_leis">Leis:</label>
+                            <input list="list_leis" placeholder="Buscar por leis" class="form-control" name="leis" id="id_leis">
+                            <datalist id="list_leis">
+                                {% for object in object_list %}
+                                    <option value="{{ object.id }}">{{ object.descricao }}</option>
+                                {% endfor %}
+                            </datalist>
+                        </div>
+                    </div>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Categoria</th>
+                                <th>Artigo</th>
+                                <th>Descrição</th>
+                                <th>Pena Base</th>
+                                <th>Fiança</th>
+                                <th>Agravante</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for object in object_list %}
+                                <tr id="checkbox_{{ object.id }}" style="display: none;">
+                                    <td><input type="checkbox" name="lei_checkbox" id="" value="{{ object.id }}" class="form-check-input"></td>
+                                    <td>{{ object.get_categoria_display }}</td>
+                                    <td>{{ object.artigo }}</td>
+                                    <td>{{ object.descricao }}</td>
+                                    <td class="pena">{{ object.pena_base_meses }} meses / R$ {{ object.pena_base_multa }}</td>
+                                    <td>{{ object.pena_fianca }}</td>
+                                    <td>{{ object.pena_agravante }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                <div class="table-responsive mb-4">
+                        <table class="table table-bordered">
+                            <thead>
+                            <tr>
+                                <th>Meses</th>
+                                <th>Fiança</th>
+                                <th>Agravante</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="total_meses"></td>
+                                    <td id="total_fianca"></td>
+                                    <td id="agravantes"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="col-10">
+                            <a href="" class="btn btn-secondary btn-block">Cancelar</a>
+                        </div>
+                        <div class="col-2 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"
+          rel="stylesheet" type="text/css"/>
+
+    <script>
+        function limpar_filtros() {
+            let inputs = document.getElementsByClassName("form-control");
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].name && inputs[i].value) {
+                    inputs[i].value = "";
+                }
+            }
+        }
+
+        if ($("#checkbox_cliente").checked == true) {
+            $('#cliente_novo').show().find('input, textarea').prop('disabled', false);
+            $('#id_cliente').val("");
+            $('#id_cliente').prop('disabled', true);
+            $('#id_cliente').css('background-color', '#0f1015');
+        } else {
+            $('#id_cliente').prop('disabled', false);
+            $('#id_cliente').css('background-color', '#2A3038');
+            $('#cliente_novo').hide().find('input, textarea').prop('disabled', true);
+        }
+
+
+        $("#checkbox_cliente").change(function () {
+            if (this.checked == true) {
+                $('#cliente_novo').show().find('input, textarea').prop('disabled', false);
+                $('#id_cliente').prop('disabled', true);
+                $('#id_cliente').css('background-color', '#0f1015');
+            } else {
+                $('#id_cliente').prop('disabled', false);
+                $('#id_cliente').css('background-color', '#2A3038');
+                $('#cliente_novo').hide().find('input, textarea').prop('disabled', true);
+            }
+            $('#id_cliente').val("");
+        });
+        var lista_leis = [];
+        $("#id_leis").change(function () {
+            var value = $("#checkbox_" + this.value).find('input').val()
+            var pena = $("#checkbox_" + this.value).find('.pena').html()
+            if (!lista_leis.includes(value)) {
+                $("#checkbox_" + this.value).show();
+                $("#checkbox_" + this.value).find('input').prop('checked', true);
+                var value_dict = {
+                    id: value,
+                    pena: pena
+                };
+                console.log(value_dict);
+                lista_leis.push(value);
+                console.log("Adicionado:" + value);
+            }
+            $("#id_leis").val("");
+            console.log($(""))
+        });
+
+        $("input[name='lei_checkbox']").change(function () {
+            var value = this.value;
+            if (lista_leis.includes(value)) {
+                $("#checkbox_" + this.value).find('input').prop('checked', false);
+                $("#checkbox_" + this.value).hide();
+                lista_leis.pop(value);
+                $("#id_leis").val("");
+                console.log("Removido " + value);
+            }
+        });
+
+        $('#form').submit(function() {
+            $(this).append('<input type="hidden" name="lista_leis" value="' + lista_leis + '" /> ');
+            return true;
+        });
+
+    </script>
+{% endblock %}
