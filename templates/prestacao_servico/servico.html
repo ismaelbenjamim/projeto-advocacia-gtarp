@@ -1,0 +1,130 @@
+{% extends 'base/main.html' %}
+{% load static %}
+{% block name %}Nova Prestação de Serviço{% endblock %}
+{% block content %}
+    <div class="page-header">
+        <h3 class="page-title">Serviços</h3>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#" style="text-decoration: none">Serviços</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Nova Prestação de Serviço</li>
+            </ol>
+        </nav>
+    </div>
+    <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+            <div class="card-body">
+                <h4>Nova Prestação de Serviço</h4>
+                <form id="form" method="post" enctype="multipart/form-data" class="forms-sample">
+                    {% csrf_token %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="form-group">
+                                {{ buscar_cliente }}
+                                {% for field in buscar_cliente %}
+                                    {% if field.field.queryset %}
+                                        <datalist id="{{ field.field.widget.attrs.list }}">
+                                            {% for data in field.field.queryset %}
+                                                <option value="{{ data.identidade }}">{{ data }}</option>
+                                            {% endfor %}
+                                        </datalist>
+                                    {% endif %}
+                                {% endfor %}
+
+                                <div class="col-12 mt-3">
+                                    <p class="text-warning">Não encontrou registro?</p>
+                                    <div class="form-check">
+                                        <label class="form-check-label">
+                                            <input type="checkbox" class="form-check-input">
+                                            Adicionar novo cliente <i class="input-helper"></i>
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr class="mb-4">
+
+                    <div class="row" id="cliente_novo">
+                        <div class="col-12 mb-4">
+                            <div class="card card-inverse-dark">
+                                <div class="card-body">
+                                    <h4 class="card-title">Novo cliente</h4>
+                                    {{ cliente_form.as_p }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{ servico_form.as_p }}
+                    {% for field in servico_form %}
+                        {% if field.field.queryset %}
+                            <datalist id="{{ field.field.widget.attrs.list }}">
+                                {% for data in field.field.queryset %}
+                                    <option value="{% if field.name == "responsavel" %}{{ data.identidade }}{% else %}{{ data.numero_processo }}{% endif %}">{{ data }}</option>
+                                {% endfor %}
+                            </datalist>
+                        {% endif %}
+                    {% endfor %}
+
+                    {{ form.errors }}
+
+                    <div class="row mt-3">
+                        <div class="col-10">
+                            <a href="" class="btn btn-secondary btn-block">Cancelar</a>
+                        </div>
+                        <div class="col-2 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"
+          rel="stylesheet" type="text/css"/>
+
+    <script>
+        function limpar_filtros() {
+            let inputs = document.getElementsByClassName("form-control");
+            for (let i = 0; i < inputs.length; i++) {
+                if (inputs[i].name && inputs[i].value) {
+                    inputs[i].value = "";
+                }
+            }
+        }
+
+
+        if ($('input[type=checkbox]').checked == true) {
+            $('#cliente_novo').show().find('input, textarea').prop('disabled', false);
+            $('#id_cliente').val("");
+            $('#id_cliente').prop('disabled', true);
+            $('#id_cliente').css('background-color', '#0f1015');
+        } else {
+            $('#id_cliente').prop('disabled', false);
+            $('#id_cliente').css('background-color', '#2A3038');
+            $('#cliente_novo').hide().find('input, textarea').prop('disabled', true);
+        }
+
+
+        $('input[type=checkbox]').change(function () {
+            if (this.checked == true) {
+                $('#cliente_novo').show().find('input, textarea').prop('disabled', false);
+                $('#id_cliente').val("");
+                $('#id_cliente').prop('disabled', true);
+                $('#id_cliente').css('background-color', '#0f1015');
+            } else {
+                $('#id_cliente').prop('disabled', false);
+                $('#id_cliente').css('background-color', '#2A3038');
+                $('#cliente_novo').hide().find('input, textarea').prop('disabled', true);
+            }
+        });
+
+    </script>
+{% endblock %}

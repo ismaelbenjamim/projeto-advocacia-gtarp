@@ -76,3 +76,9 @@ class PrestacaoServico(models.Model):
     descricao = models.TextField(verbose_name='Descrição do serviço prestado', null=True, blank=True)
     valor = models.DecimalField(verbose_name="Valor", max_digits=15, decimal_places=2)
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True)
+    processo = models.ForeignKey(Processo, on_delete=models.CASCADE, null=True, blank=True)
+
+
+class ServicoLeis(models.Model):
+    servico = models.ForeignKey(PrestacaoServico, on_delete=models.CASCADE)
+    leis = models.ForeignKey(Lei, on_delete=models.CASCADE)

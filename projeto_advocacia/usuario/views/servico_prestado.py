@@ -1,18 +1,32 @@
 from django import forms
+from django.core.exceptions import ImproperlyConfigured
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.views.generic import TemplateView
+
 from projeto_advocacia.core.forms import CustomModelForm
 from projeto_advocacia.core.views import CustomListView, CustomDetailView, CustomCreateView, CustomUpdateView, \
     CustomDeleteView
 from projeto_advocacia.processo.models import PrestacaoServico
+from projeto_advocacia.usuario.models import Cliente
 
 
 class PrestacaoServicoForm(forms.ModelForm):
+    fields_data_list = None
     class Meta:
         model = PrestacaoServico
         fields = '__all__'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         for visible in self.visible_fields():
+            if self.fields_data_list:
+                if visible.name in self.fields_data_list:
+                    #visible.field.to_field_name = 'identidade'
+                    visible.field.widget = forms.TextInput(attrs=visible.field.widget.attrs)
+                    visible.field.widget.attrs['list'] = f"list_{visible.name}"
+
             if visible.field.__class__.__name__ == "BooleanField":
                 visible.field.widget.attrs['class'] = 'form-check-input mb-2'
             else:
@@ -57,19 +71,167 @@ class PrestacaoServicoDetail(CustomDetailView):
     form_class = DetailForm
 
 
-class PrestacaoServicoCreate(CustomCreateView):
-    class CreateForm(PrestacaoServicoForm):
+# class PrestacaoServicoCreate(CustomCreateView):
+#     class ClienteForm(PrestacaoServicoForm):
+#         class Meta:
+#             model = Cliente
+#             fields = '__all__'
+#
+#     class CreateForm(PrestacaoServicoForm):
+#         fields_data_list = ['cliente', 'responsavel', 'processo']
+#         class Meta:
+#             model = PrestacaoServico
+#             fields = '__all__'
+#
+#         def __init__(self, *args, **kwargs):
+#             super().__init__(*args, **kwargs)
+#             self.base_fields['cliente'].required = False
+#             for visible in self.visible_fields():
+#                 if visible.name == 'cliente':
+#                     visible.required = False
+#                 if visible.name in self.fields_data_list:
+#                     #visible.field.to_field_name = 'identidade'
+#                     visible.field.widget = forms.TextInput(attrs=visible.field.widget.attrs)
+#                     visible.field.widget.attrs['list'] = f"list_{visible.name}"
+#
+#
+#     model = PrestacaoServico
+#     template_name = 'prestacao_servico/create.html'
+#     form_class = CreateForm
+#     raiz = "Prestação de Serviços"
+#     titulo = "Adicionar nova Prestação de Serviços"
+#     url_prefix = "prestacao_servicos"
+#
+#     def get_context_data(self, **kwargs):
+#         response = super(PrestacaoServicoCreate, self).get_context_data(**kwargs)
+#         response['form_cliente'] = self.ClienteForm()
+#         return response
+#
+#     def post(self, request, *args, **kwargs):
+#         self.form_class().add_error("cliente", "Erro")
+#         data = self.request.POST.dict()
+#         if not data.get("cnh"):
+#             data["cnh"] = False
+#         if not data.get("porte"):
+#             data["porte"] = False
+#         for campo, valor in data.items():
+#             if valor == '' or valor is None:
+#                 data[campo] = None
+#         buscar_cliente = Cliente.objects.filter(identidade=data.get('identidade'))
+#         if buscar_cliente:
+#             return super(PrestacaoServicoCreate, self).get(request, *args, **kwargs)
+#         cliente = Cliente.objects.create(
+#             nome=data.get('nome'),
+#             sobrenome=data.get('sobrenome'),
+#             identidade=data.get('identidade'),
+#             celular=data.get('celular'),
+#             idade=data.get('idade'),
+#             status=data.get('status'),
+#             organizacao=data.get('organizacao'),
+#             cnh=data.get('cnh'),
+#             porte=data.get('porte')
+#         )
+#         self.request.POST._mutable = True
+#         self.request.POST['cliente'] = cliente.pk
+#         return super(PrestacaoServicoCreate, self).post(request, *args, **kwargs)
+#
+#     def get_form(self, form_class=None):
+#         super(PrestacaoServicoCreate, self).get_form()
+
+
+class PrestacaoServicoCreate(TemplateView):
+    template_name = 'prestacao_servico/servico.html'
+    object_pk = None
+
+    class BuscarClienteForm(PrestacaoServicoForm):
+        fields_data_list = ['cliente']
+        class Meta:
+            model = PrestacaoServico
+            fields = ['cliente']
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.base_fields['cliente'].required = False
+
+    class ClienteForm(PrestacaoServicoForm):
+        class Meta:
+            model = Cliente
+            fields = '__all__'
+
+    class ServicoForm(PrestacaoServicoForm):
+        fields_data_list = ['cliente', 'responsavel', 'processo']
         class Meta:
             model = PrestacaoServico
             fields = '__all__'
+            exclude = ['cliente']
 
-    model = PrestacaoServico
-    template_name = 'prestacao_servico/create.html'
-    form_class = CreateForm
-    raiz = "Prestação de Serviços"
-    titulo = "Adicionar nova Prestação de Serviços"
-    url_prefix = "prestacao_servicos"
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.base_fields['responsavel'].to_field_name = 'identidade'
+            self.base_fields['processo'].to_field_name = 'numero_processo'
 
+    def get_context_data(self, **kwargs):
+        context = super(PrestacaoServicoCreate, self).get_context_data(**kwargs)
+        context['buscar_cliente'] = self.BuscarClienteForm()
+        context['cliente_form'] = self.ClienteForm()
+        context['servico_form'] = self.ServicoForm()
+        return context
+        
+    def get(self, request, *args, **kwargs):
+        return super(PrestacaoServicoCreate, self).get(request, *args, **kwargs)
+
+    def get_form_cliente(self, data):
+        return self.ClienteForm(data)
+
+    def get_form_servico(self, data):
+        return self.ServicoForm(data)
+
+    def form_valid(self, form):
+        return HttpResponseRedirect(reverse('prestacao_servicos_detail', kwargs={'pk': self.object_pk}))
+
+    def form_invalid(self, form):
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def post(self, request, *args, **kwargs):
+        data = request.POST.dict()
+        for index, value in data.items():
+            if value == "":
+                data[index] = None
+        if not data.get('cnh'):
+            data["cnh"] = False
+        if not data.get('porte'):
+            data["porte"] = False
+        print(data)
+        if not data.get("cliente"):
+            form_cliente = self.get_form_servico(request.POST)
+            buscar_cliente = Cliente.objects.filter(identidade=data.get('identidade'))
+            if buscar_cliente:
+                form_cliente.add_error("identidade", "Já existe um cliente com essa identidade")
+            if form_cliente.is_valid():
+                cliente = Cliente.objects.create(
+                    nome=data.get('nome'),
+                    sobrenome=data.get('sobrenome'),
+                    identidade=data.get('identidade'),
+                    celular=data.get('celular'),
+                    idade=data.get('idade'),
+                    status=data.get('status'),
+                    organizacao=data.get('organizacao'),
+                    cnh=data.get('cnh'),
+                    porte=data.get('porte')
+                )
+                data['cliente'] = cliente.identidade
+            else:
+                return self.form_invalid(form_cliente)
+
+        form_servico = self.get_form_servico(data)
+        if form_servico.is_valid():
+            servico = form_servico.save()
+            print(servico)
+            self.object_pk = servico.pk
+            return self.form_valid(form_servico)
+        else:
+            return self.form_invalid(form_servico)
+        return super(PrestacaoServicoCreate, self).get(request, *args, **kwargs)
 
 class PrestacaoServicoUpdate(CustomUpdateView):
     class UpdateForm(PrestacaoServicoForm):
