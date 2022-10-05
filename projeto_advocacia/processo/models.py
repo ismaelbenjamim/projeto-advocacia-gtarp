@@ -78,7 +78,7 @@ class PrestacaoServico(models.Model):
     valor = models.DecimalField(verbose_name="Valor", max_digits=15, decimal_places=2)
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True)
     processo = models.ForeignKey(Processo, on_delete=models.CASCADE, null=True, blank=True)
-    pena_cliente = models.CharField(verbose_name='Pena do cliente', max_length=200, null=True, blank=True)
+    pena_cliente = models.TextField(verbose_name='Pena do cliente', max_length=200, null=True, blank=True)
 
 
 class ServicoLeis(models.Model):
