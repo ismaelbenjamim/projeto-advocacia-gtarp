@@ -4,7 +4,9 @@ from django.contrib import admin
 from django.urls import path, include
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
-from rest_framework import permissions
+from rest_framework import permissions, routers
+
+from projeto_advocacia.processo.apis.viewsets import LeiAPI, AplicacaoPenalAPI
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -19,8 +21,17 @@ schema_view = get_schema_view(
    permission_classes=[permissions.AllowAny],
 )
 
+router = routers.DefaultRouter()
+router.register("legislacao", LeiAPI)
+
+APIs = [
+    path("legislacao/servico", AplicacaoPenalAPI.as_view())
+]
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include(router.urls)),
+    path('api/', include(APIs)),
     path('', include('projeto_advocacia.core.urls')),
     path('dashboard/', include('projeto_advocacia.dashboard.urls')),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

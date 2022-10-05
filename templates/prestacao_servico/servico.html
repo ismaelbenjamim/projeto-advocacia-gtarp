@@ -73,18 +73,14 @@
                     {{ form.errors }}
 
                     <hr class="mt-5 mb-4">
-                    <h4 class="card-title text-danger">Legislação</h4>
+                    <h4 class="card-title text-warning">Legislação</h4>
                     <div class="row">
                         <div class="col-12 mb-3">
                             <label for="id_leis">Leis:</label>
-                            <input list="list_leis" placeholder="Buscar por leis" class="form-control" name="leis" id="id_leis">
-                            <datalist id="list_leis">
-                                {% for object in object_list %}
-                                    <option value="{{ object.id }}">{{ object.descricao }}</option>
-                                {% endfor %}
-                            </datalist>
+                            <input placeholder="Buscar por leis" class="form-control" name="leis" id="id_leis">
                         </div>
                     </div>
+
                     <div class="table-responsive mb-4">
                         <table class="table table-bordered">
                             <thead>
@@ -98,39 +94,72 @@
                                 <th>Agravante</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            {% for object in object_list %}
-                                <tr id="checkbox_{{ object.id }}" style="display: none;">
-                                    <td><input type="checkbox" name="lei_checkbox" id="" value="{{ object.id }}" class="form-check-input"></td>
-                                    <td>{{ object.get_categoria_display }}</td>
-                                    <td>{{ object.artigo }}</td>
-                                    <td>{{ object.descricao }}</td>
-                                    <td class="pena">{{ object.pena_base_meses }} meses / R$ {{ object.pena_base_multa }}</td>
-                                    <td>{{ object.pena_fianca }}</td>
-                                    <td>{{ object.pena_agravante }}</td>
-                                </tr>
-                            {% endfor %}
+                            <tbody id="conteudo">
                             </tbody>
                         </table>
                     </div>
+                    <div class="card card-inverse-dark">
+                        <div class="card-header">
+                            <h4 class="mt-2 text-danger">Delitos</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive mb-4">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Categoria</th>
+                                        <th>Artigo</th>
+                                        <th>Descrição</th>
+                                        <th>Pena Base</th>
+                                        <th>Fiança</th>
+                                        <th>Agravante</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="conteudo_definitivo">
+                                    </tbody>
+                                </table>
+                            </div>
 
-                <div class="table-responsive mb-4">
-                        <table class="table table-bordered">
-                            <thead>
-                            <tr>
-                                <th>Meses</th>
-                                <th>Fiança</th>
-                                <th>Agravante</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td id="total_meses"></td>
-                                    <td id="total_fianca"></td>
-                                    <td id="agravantes"></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                            <div class="table-responsive mb-4">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Meses</th>
+                                        <th>Multa</th>
+                                        <th>Fiança</th>
+                                        <th>Agravante</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td id="total_meses"></td>
+                                        <td id="total_multa"></td>
+                                        <td id="total_fianca"></td>
+                                        <td id="agravantes"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="table-responsive mb-4">
+                                <table class="table table-bordered">
+                                    <thead>
+                                    <tr>
+                                        <th>Meses (-30%)</th>
+                                        <th>Multa (-30%)</th>
+                                        <th>Fiança (-30%)</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <td id="total_meses_desconto"></td>
+                                        <td id="total_multa_desconto"></td>
+                                        <td id="total_fianca_desconto"></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row mt-3">
@@ -186,37 +215,66 @@
             }
             $('#id_cliente').val("");
         });
+
         var lista_leis = [];
-        $("#id_leis").change(function () {
-            var value = $("#checkbox_" + this.value).find('input').val()
-            var pena = $("#checkbox_" + this.value).find('.pena').html()
-            if (!lista_leis.includes(value)) {
-                $("#checkbox_" + this.value).show();
-                $("#checkbox_" + this.value).find('input').prop('checked', true);
-                var value_dict = {
-                    id: value,
-                    pena: pena
-                };
-                console.log(value_dict);
-                lista_leis.push(value);
-                console.log("Adicionado:" + value);
-            }
-            $("#id_leis").val("");
-            console.log($(""))
+        $("#id_leis").keyup(function () {
+
+            $.get("/api/legislacao/?descricao=" + this.value, function (result) {
+                var html_str = "";
+                for (const lei in result) {
+                    html_str = html_str + `<tr id="lei_${result[lei].id}">
+                    <td><input type="checkbox" onclick="adicionar_lei(${result[lei].id})" name="checkbox_lei" id="checkbox_lei_${result[lei].id}" value="${result[lei].id}" class="form-check-input"></td>
+                    <td>${result[lei].categoria}</td>
+                    <td>${result[lei].descricao}</td>
+                    <td>${result[lei].pena_base_meses} / ${result[lei].pena_base_multa}</td>
+                    <td>${result[lei].pena_fianca}</td>
+                    <td>${result[lei].pena_agravante}</td>
+                    </tr>`
+                }
+                $("#conteudo").html(html_str);
+            });
         });
 
-        $("input[name='lei_checkbox']").change(function () {
-            var value = this.value;
-            if (lista_leis.includes(value)) {
-                $("#checkbox_" + this.value).find('input').prop('checked', false);
-                $("#checkbox_" + this.value).hide();
-                lista_leis.pop(value);
-                $("#id_leis").val("");
-                console.log("Removido " + value);
-            }
-        });
+        function aplicacao_penal() {
+            $.get("/api/legislacao/servico?leis=" + lista_leis.toString(), function (result) {
+                $("#total_meses_desconto").html(result.meses - (result.meses * 30)/100);
+                $("#total_multa_desconto").html(result.multa - (result.multa * 30)/100);
+                $("#total_fianca_desconto").html(result.fianca - (result.fianca * 30)/100);
+                $("#total_meses").html(result.meses);
+                $("#total_multa").html(result.multa);
+                $("#total_fianca").html(result.fianca);
+                $("#agravantes").html(result.agravante.toString());
+            });
+        }
 
-        $('#form').submit(function() {
+        function remover_lei(lei) {
+            var index = lista_leis.indexOf(lei);
+            lista_leis.splice(index, 1);
+            $("#lei_adicionada_" + lei).remove();
+            console.log(lista_leis)
+            aplicacao_penal();
+        }
+
+        function adicionar_lei(lei) {
+            $.get(`/api/legislacao/${lei}/`, function (result) {
+                var html_str = `<tr id="lei_adicionada_${result.id}">
+                <td><input type="checkbox" onclick="remover_lei(${result.id})" name="checkbox_lei" id="checkbox_lei_${result.id}" value="${result.id}" class="form-check-input"></td>
+                <td>${result.categoria}</td>
+                <td>${result.descricao}</td>
+                <td>${result.pena_base_meses} / ${result.pena_base_multa}</td>
+                <td>${result.pena_fianca}</td>
+                <td>${result.pena_agravante}</td>
+                </tr>`;
+                let conteudo_atual = $("#conteudo_definitivo").html();
+                $("#conteudo_definitivo").html(conteudo_atual + html_str);
+            });
+            lista_leis.push(lei);
+            $("#lei_" + lei).remove();
+            console.log(lista_leis);
+            aplicacao_penal(lista_leis);
+        }
+
+        $('#form').submit(function () {
             $(this).append('<input type="hidden" name="lista_leis" value="' + lista_leis + '" /> ');
             return true;
         });

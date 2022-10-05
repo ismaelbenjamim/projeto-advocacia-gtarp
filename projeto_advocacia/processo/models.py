@@ -61,11 +61,11 @@ class Lei(models.Model):
     )
     categoria = models.CharField('Categoria', max_length=200, choices=TIPOS_LEIS)
     artigo = models.CharField('Artigo', max_length=200)
-    descricao = models.TextField('Descrição')
+    descricao = models.CharField('Descrição', max_length=255)
     pena_base_multa = models.DecimalField('Multa de pena', max_digits=15, decimal_places=2, default=0)
     pena_base_meses = models.IntegerField('Meses da pena', default=0)
     pena_fianca = models.DecimalField('Fiança', max_digits=15, decimal_places=2, null=True, blank=True)
-    pena_agravante = models.TextField('Agravante', null=True, blank=True)
+    pena_agravante = models.CharField('Agravante', max_length=255, null=True, blank=True)
 
     def __str__(self):
         return f'{self.get_categoria_display()} - {self.artigo}'
