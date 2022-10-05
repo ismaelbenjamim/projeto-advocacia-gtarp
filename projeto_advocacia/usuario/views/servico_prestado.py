@@ -148,7 +148,7 @@ class PrestacaoServicoCreate(TemplateView):
             if buscar_cliente:
                 form_cliente.add_error("identidade", "Já existe um cliente com essa identidade")
             if form_cliente.is_valid():
-                data['cliente'] = Cliente.objects.create(
+                cliente = Cliente.objects.create(
                     nome=data.get('nome'),
                     sobrenome=data.get('sobrenome'),
                     identidade=data.get('identidade'),
@@ -159,6 +159,7 @@ class PrestacaoServicoCreate(TemplateView):
                     cnh=data.get('cnh'),
                     porte=data.get('porte')
                 )
+                data['cliente'] = cliente.identidade
             else:
                 return self.form_invalid(form_cliente)
         print(data)
