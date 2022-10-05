@@ -65,7 +65,7 @@ class Lei(models.Model):
     pena_base_multa = models.DecimalField('Multa de pena', max_digits=15, decimal_places=2, default=0)
     pena_base_meses = models.IntegerField('Meses da pena', default=0)
     pena_fianca = models.DecimalField('Fiança', max_digits=15, decimal_places=2, null=True, blank=True)
-    pena_agravante = models.TextField('Agravante', null=True, blank=True)
+    pena_agravante = models.CharField('Agravante', max_length=255, null=True, blank=True)
 
     def __str__(self):
         return f'{self.get_categoria_display()} - {self.artigo}'
@@ -78,7 +78,7 @@ class PrestacaoServico(models.Model):
     valor = models.DecimalField(verbose_name="Valor", max_digits=15, decimal_places=2)
     cliente = models.ForeignKey(Cliente, on_delete=models.SET_NULL, null=True)
     processo = models.ForeignKey(Processo, on_delete=models.CASCADE, null=True, blank=True)
-    pena_cliente = models.CharField(verbose_name='Pena do cliente', max_length=200, null=True, blank=True)
+    pena_cliente = models.TextField(verbose_name='Pena do cliente', max_length=200, null=True, blank=True)
 
 
 class ServicoLeis(models.Model):

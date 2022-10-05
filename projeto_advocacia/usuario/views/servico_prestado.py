@@ -59,6 +59,7 @@ class PrestacaoServicoDetail(CustomDetailView):
 
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
+            print(self.data)
             for visible in self.visible_fields():
                 visible.field.widget.attrs['disabled'] = True
 
@@ -147,7 +148,7 @@ class PrestacaoServicoCreate(TemplateView):
             if buscar_cliente:
                 form_cliente.add_error("identidade", "Já existe um cliente com essa identidade")
             if form_cliente.is_valid():
-                cliente = Cliente.objects.create(
+                data['cliente'] = Cliente.objects.create(
                     nome=data.get('nome'),
                     sobrenome=data.get('sobrenome'),
                     identidade=data.get('identidade'),
@@ -165,7 +166,7 @@ class PrestacaoServicoCreate(TemplateView):
         if form_servico.is_valid():
             servico = form_servico.save()
             if not servico.cliente:
-                servico.cliente = cliente
+                servico.cliente = Cliente.objects.get(identidade=data['cliente'])
                 servico.save()
             self.object_pk = servico.pk
             for lei_id in data['lista_leis']:
