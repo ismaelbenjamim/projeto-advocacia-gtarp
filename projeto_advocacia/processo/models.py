@@ -58,6 +58,7 @@ class Lei(models.Model):
         ('6', 'Código de Trânsito Brasileiro'),
         ('7', 'Abuso de Autoridade'),
         ('8', 'Lavagem de dinheiro'),
+        ('9', 'Parte Geral'),
     )
     categoria = models.CharField('Categoria', max_length=200, choices=TIPOS_LEIS)
     artigo = models.CharField('Artigo', max_length=200)

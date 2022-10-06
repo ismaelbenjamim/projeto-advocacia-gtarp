@@ -17,6 +17,9 @@ class LeiAPI(viewsets.ModelViewSet):
         descricao = serializers.CharField(required=False)
         artigo = serializers.CharField(required=False)
 
+    class PostSerializer(serializers.ListSerializer):
+        child = LeiSerializer()
+
     def get_queryset(self):
         queryset = self.queryset.all()
         descricao = self.request.query_params.get("descricao")
@@ -30,6 +33,11 @@ class LeiAPI(viewsets.ModelViewSet):
     @swagger_auto_schema(query_serializer=QuerySerializer())
     def list(self, request, *args, **kwargs):
         return super(LeiAPI, self).list(request, *args, **kwargs)
+
+    @swagger_auto_schema(request_body=PostSerializer)
+    def create(self, request, *args, **kwargs):
+        self.serializer_class = self.PostSerializer
+        return super(LeiAPI, self).create(request, *args, **kwargs)
 
 
 class AplicacaoPenalAPI(APIView):
